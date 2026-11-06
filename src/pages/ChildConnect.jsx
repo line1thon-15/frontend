@@ -4,6 +4,9 @@ import { useNavigate } from 'react-router-dom'
 
 const GRADES = ['초등 고학년', '중학생', '고등학생']
 
+// TODO: 백엔드에서 아이 로그인 코드를 받아오면 교체
+const MOCK_LOGIN_CODE = 'ABC-1234'
+
 function TextField({ label, ...inputProps }) {
   return (
     <label className="block">
@@ -21,11 +24,26 @@ export default function ChildConnect() {
   const [name, setName] = useState('')
   const [grade, setGrade] = useState(null)
   const [pin, setPin] = useState('')
+  const [shareMessage, setShareMessage] = useState('')
 
   const canSubmit = name.trim() !== '' && grade !== null && pin.length === 4
 
   const handlePinChange = (e) => {
     setPin(e.target.value.replace(/\D/g, '').slice(0, 4))
+  }
+
+  const handleShare = async () => {
+    const text = `아이 로그인 코드: ${MOCK_LOGIN_CODE}`
+    try {
+      if (navigator.share) {
+        await navigator.share({ text })
+      } else {
+        await navigator.clipboard.writeText(MOCK_LOGIN_CODE)
+        setShareMessage('코드를 복사했어요')
+      }
+    } catch {
+      // 공유 창을 닫은 경우 등은 무시
+    }
   }
 
   const handleSubmit = (e) => {
@@ -92,8 +110,14 @@ export default function ChildConnect() {
         />
       </div>
 
+      <div className="mt-6 rounded-3xl bg-surface-soft px-5 py-6 text-center">
+        <p className="text-sm text-muted">아이 로그인 코드</p>
+        <p className="my-2 text-3xl font-bold tracking-wide">{MOCK_LOGIN_CODE}</p>
+        <p className="text-sm text-muted">아이 기기에서 이 코드와 PIN으로 로그인해요</p>
+      </div>
+
       {/* TODO: 공통 Button 컴포넌트가 나오면 교체 */}
-      <div className="mt-auto pt-6">
+      <div className="mt-auto flex flex-col gap-3 pt-6">
         <button
           type="submit"
           disabled={!canSubmit}
@@ -101,6 +125,16 @@ export default function ChildConnect() {
         >
           연결 완료
         </button>
+        <button
+          type="button"
+          onClick={handleShare}
+          className="h-14 w-full rounded-2xl border border-primary bg-white text-base font-bold"
+        >
+          코드 공유하기
+        </button>
+        <p role="status" className="h-5 text-center text-sm text-muted">
+          {shareMessage}
+        </p>
       </div>
     </form>
   )
