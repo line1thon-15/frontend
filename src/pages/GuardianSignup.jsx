@@ -49,7 +49,8 @@ export default function GuardianSignup() {
   const [agreed, setAgreed] = useState({})
 
   const allAgreed = AGREEMENTS.every((item) => agreed[item.id])
-  const canSubmit = EMAIL_PATTERN.test(email) && password.length >= 8
+  const requiredAgreed = AGREEMENTS.filter((item) => item.required).every((item) => agreed[item.id])
+  const canSubmit = EMAIL_PATTERN.test(email) && password.length >= 8 && requiredAgreed
 
   const toggleAll = () => {
     const next = !allAgreed
