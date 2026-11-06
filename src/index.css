@@ -1,7 +1,14 @@
 @import "tailwindcss";
 
-/* 피그마 디자인 토큰(색상, 폰트)은 확정되면 아래처럼 추가하세요.
+/* 피그마 디자인 토큰
+   - 피그마 화면에서 추출한 근사값입니다. 정확한 값이 나오면 여기만 고치면 전체에 반영돼요.
+   - 사용 예: bg-surface, bg-primary, text-muted, border-line */
 @theme {
-  --color-primary: #f5c242;
+  --color-surface: #fefdf8;      /* 화면 배경 (크림) */
+  --color-surface-soft: #faf3d6; /* 연노랑 박스 배경 */
+  --color-primary: #eec752;      /* 메인 버튼, 선택 강조 */
+  --color-line: #eae3c6;         /* 입력칸 테두리, 구분선 */
+  --color-line-strong: #c4b795;  /* 체크박스 테두리 */
+  --color-ink: #2b2a26;          /* 기본 글자 */
+  --color-muted: #928c80;        /* 보조 글자, 안내 문구 */
 }
-*/
