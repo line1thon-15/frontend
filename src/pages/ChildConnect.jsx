@@ -20,8 +20,13 @@ export default function ChildConnect() {
   const navigate = useNavigate()
   const [name, setName] = useState('')
   const [grade, setGrade] = useState(null)
+  const [pin, setPin] = useState('')
 
-  const canSubmit = name.trim() !== '' && grade !== null
+  const canSubmit = name.trim() !== '' && grade !== null && pin.length === 4
+
+  const handlePinChange = (e) => {
+    setPin(e.target.value.replace(/\D/g, '').slice(0, 4))
+  }
 
   const handleSubmit = (e) => {
     e.preventDefault()
@@ -75,6 +80,16 @@ export default function ChildConnect() {
             ))}
           </div>
         </fieldset>
+
+        <TextField
+          label="아이 PIN 정하기 (숫자 4개)"
+          type="password"
+          inputMode="numeric"
+          autoComplete="off"
+          placeholder="••••"
+          value={pin}
+          onChange={handlePinChange}
+        />
       </div>
 
       {/* TODO: 공통 Button 컴포넌트가 나오면 교체 */}
