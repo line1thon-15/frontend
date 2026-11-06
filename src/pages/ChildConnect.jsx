@@ -2,6 +2,8 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
+const GRADES = ['초등 고학년', '중학생', '고등학생']
+
 function TextField({ label, ...inputProps }) {
   return (
     <label className="block">
@@ -17,14 +19,15 @@ function TextField({ label, ...inputProps }) {
 export default function ChildConnect() {
   const navigate = useNavigate()
   const [name, setName] = useState('')
+  const [grade, setGrade] = useState(null)
 
-  const canSubmit = name.trim() !== ''
+  const canSubmit = name.trim() !== '' && grade !== null
 
   const handleSubmit = (e) => {
     e.preventDefault()
     if (!canSubmit) return
     // TODO: 백엔드 아이 등록 API 연동 후, 성공하면 G3 성장 요약 화면으로 이동
-    console.log('아이 연결 요청', { name })
+    console.log('아이 연결 요청', { name, grade })
   }
 
   return (
@@ -53,6 +56,25 @@ export default function ChildConnect() {
           value={name}
           onChange={(e) => setName(e.target.value)}
         />
+
+        <fieldset>
+          <legend className="mb-2 text-sm">학년</legend>
+          <div className="flex gap-2">
+            {GRADES.map((item) => (
+              <button
+                key={item}
+                type="button"
+                onClick={() => setGrade(item)}
+                aria-pressed={grade === item}
+                className={`h-9 rounded-full border px-4 text-sm transition-colors ${
+                  grade === item ? 'border-primary bg-primary font-bold' : 'border-line bg-white'
+                }`}
+              >
+                {item}
+              </button>
+            ))}
+          </div>
+        </fieldset>
       </div>
 
       {/* TODO: 공통 Button 컴포넌트가 나오면 교체 */}
