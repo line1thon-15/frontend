@@ -1,9 +1,9 @@
 // 피그마 Components / Button
 // variant: 'primary'(1번, 노랑) | 'outline'(2번, 테두리) | 'soft'(3번, 연노랑)
 const VARIANTS = {
-  primary: 'bg-[#FFC531] text-[#3A2A12]',
-  outline: 'bg-white text-[#7A5600] border-[1.5px] border-[#F2B300]',
-  soft: 'bg-[#FFF1C7] text-[#7A5600]',
+  primary: 'bg-primary text-ink',
+  outline: 'bg-white text-primary-ink border-[1.5px] border-primary-strong',
+  soft: 'bg-surface-soft text-primary-ink',
 }
 
 export default function Button({ variant = 'primary', className = '', children, ...props }) {

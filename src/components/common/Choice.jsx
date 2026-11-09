@@ -7,15 +7,15 @@ export default function Choice({ selected = false, onClick, children }) {
       role="radio"
       aria-checked={selected}
       onClick={onClick}
-      className={`flex w-full items-center gap-3 rounded-xl px-4 py-3 text-left text-sm text-[#3A2A12] transition ${
+      className={`flex w-full items-center gap-3 rounded-xl px-4 py-3 text-left text-sm text-ink transition ${
         selected
-          ? 'border-2 border-[#F2B300] bg-[#FFF6D6]'
-          : 'border border-[#F0E2BF] bg-white'
+          ? 'border-2 border-primary-strong bg-surface-selected'
+          : 'border border-line bg-white'
       }`}
     >
       <span
         className={`size-4 shrink-0 rounded-full border ${
-          selected ? 'border-[#F2B300] bg-[#FFC531]' : 'border-[#F0E2BF] bg-white'
+          selected ? 'border-primary-strong bg-primary' : 'border-line bg-white'
         }`}
         aria-hidden="true"
       />

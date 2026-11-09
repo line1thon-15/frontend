@@ -6,7 +6,7 @@ import backIcon from '../../assets/icons/back.svg'
 export default function Header({ title, showBack = true, onBack }) {
   const navigate = useNavigate()
   return (
-    <header className="relative flex h-12 items-center justify-center bg-[#FFFBEE] px-4 text-[#3A2A12]">
+    <header className="relative flex h-12 items-center justify-center bg-surface px-4 text-ink">
       {showBack && (
         <button
           type="button"
