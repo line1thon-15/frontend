@@ -28,4 +28,8 @@
 
   /* 기타 */
   --color-accent: #ff9466;           /* 말풍선 프로필 (코랄) */
+  --color-accent-soft: #ffd6c5;      /* 연한 코랄 (홈 상황 연습 아이콘 배경) */
+  --color-mint-soft: #ddf5e8;        /* 연한 민트 (홈 성장 기록 아이콘 배경) */
+  --color-progress: #fff5d6;         /* 영역별 진행 칩 배경 */
+  --color-subtle: #7a6a4c;           /* 카드 설명 글자 */
 }
