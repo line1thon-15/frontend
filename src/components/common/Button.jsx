@@ -10,7 +10,7 @@ export default function Button({ variant = 'primary', className = '', children, 
   return (
     <button
       type="button"
-      className={`h-12 w-full rounded-xl text-base font-bold transition active:brightness-95 disabled:opacity-40 ${VARIANTS[variant]} ${className}`}
+      className={`h-14 w-full rounded-2xl text-lg font-bold transition active:brightness-95 disabled:opacity-40 ${VARIANTS[variant]} ${className}`}
       {...props}
     >
       {children}
