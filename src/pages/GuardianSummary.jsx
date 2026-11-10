@@ -1,6 +1,7 @@
 // G3 성장 요약 (보호자)
 import { useState } from 'react'
 import StatusBar from '../components/common/StatusBar.jsx'
+import Button from '../components/common/Button.jsx'
 import HomeIndicator from '../components/common/HomeIndicator.jsx'
 
 // TODO: 백엔드 연동 후 보호자 성장 요약 API에서 받아오기
@@ -85,7 +86,7 @@ function TrendChart({ weeks, values }) {
 }
 
 export default function GuardianSummary() {
-  const { nickname, stats, weeks, trends } = MOCK
+  const { nickname, alert, stats, weeks, trends, areas } = MOCK
   const [metric, setMetric] = useState('first')
 
   return (
@@ -94,6 +95,14 @@ export default function GuardianSummary() {
 
       <main className="flex flex-1 flex-col gap-3 px-5 pt-3">
         <h1 className="py-2 text-lg font-bold">{callName(nickname)}의 성장 요약</h1>
+
+        {/* TODO: 안전 알림은 메시지 분석 기능과 연결됨 — MVP 포함 여부 확인 필요 */}
+        <section className="rounded-3xl border-2 border-rose-300 bg-rose-50/60 p-4">
+          <span className="rounded-full bg-rose-400 px-3 py-1 text-xs font-bold text-white">안전 알림</span>
+          <p className="mt-3 text-xs text-muted">{alert.time}</p>
+          <p className="mt-1 text-[0.9375rem] font-bold">{alert.title}</p>
+          <p className="mt-1 text-sm text-muted">{alert.description}</p>
+        </section>
 
         <ul className="grid grid-cols-3 gap-2">
           {stats.map((item) => (
@@ -127,7 +136,22 @@ export default function GuardianSummary() {
           <TrendChart weeks={weeks} values={trends[metric].values} />
         </section>
 
+        <section className="rounded-3xl bg-surface-soft p-4">
+          <h2 className="text-sm font-bold">영역별 진행</h2>
+          <ul className="mt-2 flex flex-col gap-1 text-sm">
+            {areas.map((area) => (
+              <li key={area.label}>
+                {area.label} · {area.progress}%
+              </li>
+            ))}
+          </ul>
+        </section>
       </main>
+
+      <div className="px-5 pt-4 pb-4">
+        {/* TODO: 약한 단서 상세 화면이 정해지면 연결 */}
+        <Button variant="outline">약한 단서 자세히 보기</Button>
+      </div>
 
       <HomeIndicator />
     </div>
