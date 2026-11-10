@@ -16,7 +16,7 @@ const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
 function Checkbox({ checked, onChange, label }) {
   return (
-    <label className="flex cursor-pointer items-center gap-3 text-[15px]">
+    <label className="flex cursor-pointer items-center gap-3 text-[0.9375rem]">
       <input type="checkbox" className="peer sr-only" checked={checked} onChange={onChange} />
       <span
         aria-hidden
@@ -38,7 +38,7 @@ function TextField({ label, ...inputProps }) {
     <label className="block">
       <span className="mb-2 block text-sm">{label}</span>
       <input
-        className="h-12 w-full rounded-2xl border border-line bg-white px-4 text-[15px] outline-none placeholder:text-muted focus:border-primary"
+        className="h-12 w-full rounded-2xl border border-line bg-white px-4 text-[0.9375rem] outline-none placeholder:text-muted focus:border-primary"
         {...inputProps}
       />
     </label>
