@@ -56,7 +56,7 @@ export default function ChildGrowth() {
                 <div className="flex items-center justify-between text-sm">
                   <span>{area.label}</span>
                   {area.badge && (
-                    <span className="rounded-full bg-primary/50 px-2.5 py-0.5 text-xs text-primary-ink">
+                    <span className="rounded-full bg-[#f8e6a2] px-3.5 py-1.5 text-sm font-medium text-primary-ink">
                       배지
                     </span>
                   )}
@@ -77,12 +77,12 @@ export default function ChildGrowth() {
         </Card>
 
         <Card className="bg-surface-soft">
-          <h2 className="text-sm font-bold">더 연습이 필요한 단서</h2>
+          <h2 className="text-sm font-bold text-muted">더 연습이 필요한 단서</h2>
           <ul className="mt-2 flex flex-wrap gap-2">
             {weakClues.map((clue) => (
               <li
                 key={clue}
-                className="rounded-full border border-primary-ink/60 bg-white/60 px-3 py-1 text-xs text-primary-ink"
+                className="rounded-full border border-primary-ink px-4 py-1.5 text-sm font-medium text-primary-ink"
               >
                 {clue}
               </li>
@@ -91,13 +91,13 @@ export default function ChildGrowth() {
         </Card>
 
         <Card className="border border-line bg-white">
-          <h2 className="text-sm font-bold">최근 내가 직접 한 답</h2>
+          <h2 className="text-sm font-bold text-muted">최근 내가 직접 한 답</h2>
           <p className="mt-2 text-sm leading-relaxed">“{latestAnswer.text}”</p>
           <div className="mt-3 flex gap-2">
-            <span className="rounded-full bg-primary/50 px-2.5 py-0.5 text-xs text-primary-ink">
-              ✎ {latestAnswer.method}
+            <span className="rounded-full bg-[#f8e6a2] px-3.5 py-1.5 text-sm font-medium text-primary-ink">
+              ✏️ {latestAnswer.method}
             </span>
-            <span className="rounded-full border border-emerald-600/60 bg-mint-soft px-2.5 py-0.5 text-xs text-emerald-700">
+            <span className="rounded-full border border-[#3f8a62] bg-[#f4fff8] px-4 py-1.5 text-sm font-medium text-[#3b7d58]">
               {latestAnswer.result}
             </span>
           </div>
