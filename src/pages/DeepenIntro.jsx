@@ -20,7 +20,7 @@ export default function DeepenIntro() {
       <StatusBar />
 
       <main className="flex flex-1 flex-col items-center justify-center px-5 pb-10 text-center">
-        <img src={celebrate} alt="" className="w-52" />
+        <img src={celebrate} alt="" className="w-[10.5rem]" />
         <h1 className="mt-6 text-[1.375rem] font-bold">축하합니다 !</h1>
         <p className="mt-3 text-sm leading-relaxed text-primary-ink">
           {areaLabel}
