@@ -50,7 +50,7 @@ export default function ChildGrowth() {
 
         <Card className="border border-line bg-white">
           <h2 className="text-sm font-bold text-muted">영역별 연습</h2>
-          <ul className="mt-3 flex flex-col gap-3">
+          <ul className="mt-2.5 flex flex-col gap-2.5">
             {areas.map((area) => (
               <li key={area.id}>
                 <div className="flex items-center justify-between text-sm">
@@ -76,7 +76,7 @@ export default function ChildGrowth() {
           </ul>
         </Card>
 
-        <Card className="bg-surface-soft">
+        <Card className="border border-success-soft bg-surface-soft">
           <h2 className="text-sm font-bold text-muted">더 연습이 필요한 단서</h2>
           <ul className="mt-2 flex flex-wrap gap-2">
             {weakClues.map((clue) => (
