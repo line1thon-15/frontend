@@ -1,0 +1,246 @@
+// Y7-1 심화 연습 (글로 답하기) / Y7-2 심화 연습 (말로 답하기)
+import { useEffect, useRef, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import StatusBar from '../components/common/StatusBar.jsx'
+import Header from '../components/common/Header.jsx'
+import Button from '../components/common/Button.jsx'
+import Bubble from '../components/common/Bubble.jsx'
+import HomeIndicator from '../components/common/HomeIndicator.jsx'
+
+// TODO: 백엔드(AI) 심화 연습 상황 API 연동 후 교체
+const MOCK = {
+  index: 1,
+  total: 5,
+  hintLimit: 2,
+  messages: ['게임에서 만난 형인데, 네 계정 빌려주면 레벨 대신 올려 줄게!', '비밀번호만 알려 주면 돼. 부모님한테는 비밀로 하자~'],
+  hints: ['비밀번호는 나만 알아야 하는 거예요', '모르는 사람이 비밀로 하자고 하면 한 번 멈춰요'],
+}
+
+const MAX_LENGTH = 100
+const WAVE = [10, 18, 28, 20, 34, 26, 38, 30, 22, 32, 16, 24, 12, 8]
+
+const SpeechRecognition =
+  typeof window !== 'undefined' ? window.SpeechRecognition || window.webkitSpeechRecognition : undefined
+
+function formatTime(seconds) {
+  return `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, '0')}`
+}
+
+function MicIcon({ className = '' }) {
+  return (
+    <svg viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+      <rect x="9" y="3" width="6" height="11" rx="3" />
+      <path d="M5 11a7 7 0 0 0 14 0M12 18v3" strokeLinecap="round" />
+    </svg>
+  )
+}
+
+// mode: 'write'(글로 답하기) | 'speak'(말로 답하기)
+export default function DeepenPractice({ initialMode = 'write' }) {
+  const navigate = useNavigate()
+  const { index, total, hintLimit, messages, hints } = MOCK
+  const [mode, setMode] = useState(initialMode)
+  const [text, setText] = useState('')
+  const [transcript, setTranscript] = useState('')
+  const [seconds, setSeconds] = useState(0)
+  const [speechError, setSpeechError] = useState('')
+  const [hintsUsed, setHintsUsed] = useState(0)
+  const recognitionRef = useRef(null)
+
+  const hintsLeft = hintLimit - hintsUsed
+  const visibleHints = hints.slice(0, hintsUsed)
+
+  // 말로 답하기: 브라우저 음성 인식으로 말을 글자로 바꿔요. 녹음 파일은 저장하지 않아요.
+  const startListening = () => {
+    setTranscript('')
+    setSeconds(0)
+    setSpeechError('')
+    if (!SpeechRecognition) {
+      setSpeechError('이 기기에서는 말하기를 쓸 수 없어요. 글로 써 주세요.')
+      return
+    }
+    try {
+      const recognition = new SpeechRecognition()
+      recognition.lang = 'ko-KR'
+      recognition.continuous = true
+      recognition.interimResults = true
+      recognition.onresult = (event) => {
+        setTranscript(Array.from(event.results, (result) => result[0].transcript).join(' '))
+      }
+      recognition.onerror = () => setSpeechError('마이크를 쓸 수 없어요. 글로 써 주세요.')
+      recognition.start()
+      recognitionRef.current = recognition
+    } catch {
+      setSpeechError('말하기를 시작하지 못했어요. 글로 써 주세요.')
+    }
+  }
+
+  const stopListening = () => {
+    recognitionRef.current?.stop()
+    recognitionRef.current = null
+  }
+
+  useEffect(() => {
+    if (mode !== 'speak') return undefined
+    startListening()
+    const timer = setInterval(() => setSeconds((value) => value + 1), 1000)
+    return () => {
+      clearInterval(timer)
+      stopListening()
+    }
+  }, [mode])
+
+  const handleHint = () => {
+    if (hintsLeft > 0) setHintsUsed((value) => value + 1)
+  }
+
+  const answer = mode === 'write' ? text.trim() : transcript.trim()
+
+  const handleSubmit = () => {
+    if (!answer) return
+    stopListening()
+    // TODO: 백엔드 심화 연습 답변 제출 API 연동 — 원문은 저장하지 않고 평가 결과만 받기
+    navigate('/child/deepen/result')
+  }
+
+  const hintButton = (
+    <button
+      type="button"
+      onClick={handleHint}
+      disabled={hintsLeft === 0}
+      className="h-14 flex-1 rounded-2xl border-[1.5px] border-emerald-700/70 bg-mint-soft text-lg font-bold text-emerald-800 transition active:brightness-95 disabled:opacity-40"
+    >
+      {hintsLeft === 0 ? '힌트를 다 썼어요' : '힌트 사용하기 💡'}
+    </button>
+  )
+
+  return (
+    <div className="flex min-h-screen flex-col bg-surface text-ink">
+      <StatusBar />
+      <Header title="심화 연습" />
+
+      <main className="flex flex-1 flex-col px-5 pt-2">
+        <div className="flex gap-2">
+          <span className="rounded-full bg-primary/50 px-3 py-1 text-xs font-bold text-primary-ink">
+            심화 {index} / {total}
+          </span>
+          <span className="rounded-full border border-emerald-700/70 px-3 py-1 text-xs text-emerald-800">
+            힌트 {hintsLeft}개 남음
+          </span>
+        </div>
+
+        <div className="mt-3 flex flex-col gap-2">
+          {messages.map((message) => (
+            <Bubble key={message}>{message}</Bubble>
+          ))}
+        </div>
+
+        {visibleHints.length > 0 && (
+          <ul className="mt-3 rounded-2xl border border-emerald-700/50 bg-mint-soft px-4 py-3 text-sm text-emerald-800">
+            {visibleHints.map((hint) => (
+              <li key={hint}>💡 {hint}</li>
+            ))}
+          </ul>
+        )}
+
+        <p className="mt-4 text-sm text-muted">
+          이럴 때 나는 뭐라고 할까요? {mode === 'write' ? '직접 써 보세요' : '말로 해 보세요'}
+        </p>
+
+        {mode === 'write' ? (
+          <>
+            <section className="mt-2 rounded-2xl border-2 border-primary bg-white p-4">
+              <label className="sr-only" htmlFor="deepen-answer">
+                내 답
+              </label>
+              <textarea
+                id="deepen-answer"
+                value={text}
+                maxLength={MAX_LENGTH}
+                onChange={(e) => setText(e.target.value)}
+                placeholder="여기에 써 보세요"
+                rows={3}
+                className="w-full resize-none bg-transparent text-[0.9375rem] leading-relaxed outline-none placeholder:text-muted"
+              />
+              <div className="mt-2 flex items-center justify-between">
+                <button
+                  type="button"
+                  onClick={() => setMode('speak')}
+                  className="flex items-center gap-1 rounded-full border border-line px-3 py-1 text-xs text-primary-ink"
+                >
+                  <MicIcon className="size-4" />
+                  말로 할래요
+                </button>
+                <span className="text-xs text-muted">
+                  {text.length} / {MAX_LENGTH}
+                </span>
+              </div>
+            </section>
+            <p className="mt-3 text-xs text-muted">정답은 없어요. 내 말로 편하게 써도 괜찮아요.</p>
+          </>
+        ) : (
+          <>
+            <section className="mt-2 rounded-2xl border-2 border-primary bg-white p-4 text-center">
+              <span className="mx-auto flex size-14 items-center justify-center rounded-full bg-primary/30">
+                <span className="flex size-10 items-center justify-center rounded-full bg-primary">
+                  <MicIcon className="size-5" />
+                </span>
+              </span>
+              <p className="mt-2 text-sm font-bold">
+                {speechError ? '말하기를 쓸 수 없어요' : `듣고 있어요… ${formatTime(seconds)}`}
+              </p>
+              <div className="mt-2 flex h-10 items-center justify-center gap-1" aria-hidden="true">
+                {WAVE.map((height, i) => (
+                  <span key={i} className="w-1 rounded-full bg-primary-strong" style={{ height }} />
+                ))}
+              </div>
+              <div className="mt-2 rounded-xl bg-surface px-3 py-2 text-left">
+                <p className="text-xs text-muted">내가 한 말 · 녹음 파일은 저장하지 않아요</p>
+                <p role="status" className="mt-1 min-h-6 text-[0.9375rem] leading-relaxed">
+                  {speechError || transcript}
+                </p>
+              </div>
+              <div className="mt-3 flex justify-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setMode('write')}
+                  className="rounded-full border border-line px-3 py-1 text-xs text-primary-ink"
+                >
+                  ✎ 글 쓸래요
+                </button>
+                <button
+                  type="button"
+                  onClick={startListening}
+                  className="rounded-full border border-line px-3 py-1 text-xs text-primary-ink"
+                >
+                  다시 말하기
+                </button>
+              </div>
+            </section>
+            <p className="mt-3 text-xs text-muted">말한 내용은 글자로 바뀌어요. 정답은 없으니 편하게 말해요.</p>
+          </>
+        )}
+      </main>
+
+      <div className="px-5 pt-4 pb-4">
+        {mode === 'write' ? (
+          <div className="flex gap-3">
+            {hintButton}
+            <Button className="flex-1" disabled={!answer} onClick={handleSubmit}>
+              보내기
+            </Button>
+          </div>
+        ) : (
+          <div className="flex flex-col gap-3">
+            <Button disabled={!answer} onClick={handleSubmit}>
+              다 말했어요
+            </Button>
+            <div className="flex">{hintButton}</div>
+          </div>
+        )}
+      </div>
+
+      <HomeIndicator />
+    </div>
+  )
+}
