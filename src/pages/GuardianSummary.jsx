@@ -21,7 +21,7 @@ const MOCK = {
   trends: {
     missed: { label: '위험 놓침', values: [40, 32, 28, 18] },
     doubt: { label: '정상 의심', values: [30, 26, 22, 20] },
-    first: { label: '먼저 판단', values: [34, 58, 46, 62] },
+    first: { label: '먼저 판단', values: [34, 58, 40, 62] },
   },
   areas: [
     { label: '게임 아이템·용돈 사기', progress: 80 },
@@ -36,31 +36,26 @@ function callName(name) {
   return hasBatchim ? `${name}이` : name
 }
 
-// 지표 추이 꺾은선 그래프 (값은 0~100)
+// 지표 추이 꺾은선 그래프 (피그마처럼 값의 최소~최대가 위아래 끝에 오도록 그려요)
 function TrendChart({ weeks, values }) {
-  const width = 300
-  const height = 110
-  const padX = 18
-  const padY = 14
+  const width = 376
+  const height = 100
+  const padX = 30
+  const yTop = 24
+  const yBottom = 82
+  const min = Math.min(...values)
+  const max = Math.max(...values)
   const points = values.map((value, i) => ({
     x: padX + (i * (width - padX * 2)) / (values.length - 1),
-    y: height - padY - (value / 100) * (height - padY * 2),
+    y: yBottom - ((value - min) / (max - min || 1)) * (yBottom - yTop),
   }))
   const last = points[points.length - 1]
 
   return (
-    <div className="rounded-2xl bg-progress px-2 pt-2 pb-2">
+    <div className="rounded-2xl bg-progress pb-3">
       <svg viewBox={`0 0 ${width} ${height}`} className="w-full" role="img" aria-label="주별 지표 추이">
-        {[0.33, 0.66].map((ratio) => (
-          <line
-            key={ratio}
-            x1="0"
-            x2={width}
-            y1={height * ratio}
-            y2={height * ratio}
-            className="stroke-line"
-            strokeWidth="1"
-          />
+        {[27, 71].map((y) => (
+          <line key={y} x1="0" x2={width} y1={y} y2={y} className="stroke-line" strokeWidth="1" />
         ))}
         <polyline
           points={points.map((p) => `${p.x},${p.y}`).join(' ')}
@@ -70,13 +65,17 @@ function TrendChart({ weeks, values }) {
           strokeLinejoin="round"
         />
         {points.slice(0, -1).map((p) => (
-          <circle key={p.x} cx={p.x} cy={p.y} r="4" className="fill-ink" />
+          <circle key={p.x} cx={p.x} cy={p.y} r="5" className="fill-ink" />
         ))}
-        <circle cx={last.x} cy={last.y} r="7" className="fill-primary stroke-ink" strokeWidth="2" />
+        <circle cx={last.x} cy={last.y} r="8" className="fill-primary stroke-ink" strokeWidth="2" />
       </svg>
-      <ul className="mt-1 flex justify-between px-1 text-xs text-muted">
+      <ul className="relative h-5 text-xs text-muted">
         {weeks.map((week, i) => (
-          <li key={week} className={i === weeks.length - 1 ? 'font-bold text-ink' : ''}>
+          <li
+            key={week}
+            className={`absolute -translate-x-1/2 whitespace-nowrap ${i === weeks.length - 1 ? 'font-bold text-ink' : ''}`}
+            style={{ left: `${(points[i].x / width) * 100}%` }}
+          >
             {week}
           </li>
         ))}
@@ -97,8 +96,8 @@ export default function GuardianSummary() {
         <h1 className="py-2 text-lg font-bold">{callName(nickname)}의 성장 요약</h1>
 
         {/* TODO: 안전 알림은 메시지 분석 기능과 연결됨 — MVP 포함 여부 확인 필요 */}
-        <section className="rounded-3xl border-2 border-rose-300 bg-rose-50/60 p-4">
-          <span className="rounded-full bg-rose-400 px-3 py-1 text-xs font-bold text-white">안전 알림</span>
+        <section className="rounded-3xl border-2 border-[#d1566e] bg-[#fdf7f8] p-4">
+          <span className="rounded-full bg-[#d1566e] px-3 py-1 text-xs font-bold text-white">안전 알림</span>
           <p className="mt-3 text-xs text-muted">{alert.time}</p>
           <p className="mt-1 text-[0.9375rem] font-bold">{alert.title}</p>
           <p className="mt-1 text-sm text-muted">{alert.description}</p>
@@ -114,7 +113,7 @@ export default function GuardianSummary() {
         </ul>
 
         <section className="rounded-3xl border border-line bg-white p-4">
-          <h2 className="text-sm font-bold">지표 추이</h2>
+          <h2 className="text-sm font-bold text-muted">지표 추이</h2>
           <div className="mt-2 mb-3 flex gap-2" role="tablist">
             {Object.entries(trends).map(([key, trend]) => (
               <button
@@ -125,7 +124,7 @@ export default function GuardianSummary() {
                 onClick={() => setMetric(key)}
                 className={`rounded-full px-3 py-1 text-xs transition-colors ${
                   metric === key
-                    ? 'border border-primary-ink bg-primary/60 font-bold text-primary-ink'
+                    ? 'border border-primary-ink bg-[#f8e6a2] font-bold text-primary-ink'
                     : 'bg-progress text-primary-ink'
                 }`}
               >
@@ -137,7 +136,7 @@ export default function GuardianSummary() {
         </section>
 
         <section className="rounded-3xl bg-surface-soft p-4">
-          <h2 className="text-sm font-bold">영역별 진행</h2>
+          <h2 className="text-sm font-bold text-muted">영역별 진행</h2>
           <ul className="mt-2 flex flex-col gap-1 text-sm">
             {areas.map((area) => (
               <li key={area.label}>
