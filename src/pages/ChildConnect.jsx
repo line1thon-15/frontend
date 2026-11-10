@@ -1,6 +1,10 @@
 // G2 아이 연결 (아이 등록)
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import StatusBar from '../components/common/StatusBar.jsx'
+import Header from '../components/common/Header.jsx'
+import Button from '../components/common/Button.jsx'
+import HomeIndicator from '../components/common/HomeIndicator.jsx'
 
 const GRADES = ['초등 고학년', '중학생', '고등학생']
 
@@ -42,74 +46,61 @@ export default function ChildConnect() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="flex min-h-screen flex-col px-5 pb-8">
-      {/* TODO: 공통 Header 컴포넌트로 교체 */}
-      <header className="relative flex h-14 items-center justify-center">
-        <button
-          type="button"
-          onClick={() => navigate(-1)}
-          aria-label="뒤로 가기"
-          className="absolute left-0 p-1"
-        >
-          <svg viewBox="0 0 24 24" className="size-6" fill="none" stroke="currentColor" strokeWidth="2">
-            <path d="M15 5l-7 7 7 7" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
-        </button>
-        <h1 className="text-base font-medium">아이 등록</h1>
-      </header>
+    <div className="flex min-h-screen flex-col bg-surface text-ink">
+      <StatusBar />
+      <Header title="아이 등록" />
 
-      <h2 className="mt-4 mb-6 text-xl font-bold">아이를 등록해 주세요</h2>
+      <form onSubmit={handleSubmit} className="flex flex-1 flex-col px-5 pb-4">
+        <h2 className="mt-4 mb-6 text-xl font-bold">아이를 등록해 주세요</h2>
 
-      <div className="flex flex-col gap-5">
-        <TextField
-          label="아이 별명"
-          placeholder="예: 강아지"
-          hint="실명은 적지 않아도 돼요. 아이가 좋아하는 별명이면 충분해요."
-          value={nickname}
-          onChange={(e) => setNickname(e.target.value)}
-        />
+        <div className="flex flex-col gap-5">
+          <TextField
+            label="아이 별명"
+            placeholder="예: 강아지"
+            hint="실명은 적지 않아도 돼요. 아이가 좋아하는 별명이면 충분해요."
+            value={nickname}
+            onChange={(e) => setNickname(e.target.value)}
+          />
 
-        <fieldset>
-          <legend className="mb-2 text-sm">학년</legend>
-          <div className="flex gap-2">
-            {GRADES.map((item) => (
-              <button
-                key={item}
-                type="button"
-                onClick={() => setGrade(item)}
-                aria-pressed={grade === item}
-                className={`h-9 rounded-full border px-4 text-sm transition-colors ${
-                  grade === item ? 'border-primary bg-primary font-bold' : 'border-line bg-white'
-                }`}
-              >
-                {item}
-              </button>
-            ))}
-          </div>
-        </fieldset>
+          <fieldset>
+            <legend className="mb-2 text-sm">학년</legend>
+            <div className="flex gap-2">
+              {GRADES.map((item) => (
+                <button
+                  key={item}
+                  type="button"
+                  onClick={() => setGrade(item)}
+                  aria-pressed={grade === item}
+                  className={`h-9 rounded-full border px-4 text-sm transition-colors ${
+                    grade === item ? 'border-primary bg-primary font-bold' : 'border-line bg-white'
+                  }`}
+                >
+                  {item}
+                </button>
+              ))}
+            </div>
+          </fieldset>
 
-        <TextField
-          label="아이 PIN 정하기 (숫자 4개)"
-          type="password"
-          inputMode="numeric"
-          autoComplete="off"
-          placeholder="••••"
-          hint="'연결 완료'를 누르면 아이 로그인 코드가 만들어져요."
-          value={pin}
-          onChange={handlePinChange}
-        />
-      </div>
+          <TextField
+            label="아이 PIN 정하기 (숫자 4개)"
+            type="password"
+            inputMode="numeric"
+            autoComplete="off"
+            placeholder="••••"
+            hint="'연결 완료'를 누르면 아이 로그인 코드가 만들어져요."
+            value={pin}
+            onChange={handlePinChange}
+          />
+        </div>
 
-      {/* TODO: 공통 Button 컴포넌트로 교체 */}
-      <div className="mt-auto pt-6">
-        <button
-          type="submit"
-          disabled={!canSubmit}
-          className="h-14 w-full rounded-2xl bg-primary text-base font-bold transition-opacity disabled:opacity-40"
-        >
-          연결 완료
-        </button>
-      </div>
-    </form>
+        <div className="mt-auto pt-6">
+          <Button type="submit" disabled={!canSubmit}>
+            연결 완료
+          </Button>
+        </div>
+      </form>
+
+      <HomeIndicator />
+    </div>
   )
 }
