@@ -26,7 +26,7 @@ const MOCK = {
 }
 
 function Card({ className = '', children }) {
-  return <section className={`rounded-3xl p-4 ${className}`}>{children}</section>
+  return <section className={`rounded-[1.125rem] p-4 ${className}`}>{children}</section>
 }
 
 export default function ChildGrowth() {
@@ -34,35 +34,35 @@ export default function ChildGrowth() {
   const { summary, areas, weakClues, latestAnswer } = MOCK
 
   return (
-    <div className="flex min-h-screen flex-col bg-surface text-ink">
+    <div className="flex min-h-screen flex-col bg-page text-ink">
       <StatusBar />
       <Header title="내 성장 기록" />
 
       <main className="flex flex-1 flex-col gap-3 px-5 pt-3">
         <ul className="grid grid-cols-3 gap-2">
           {summary.map((item) => (
-            <li key={item.label} className="rounded-2xl bg-surface-soft py-3 text-center">
-              <p className="text-xl font-bold">{item.value}</p>
-              <p className="mt-0.5 text-xs text-muted">{item.label}</p>
+            <li key={item.label} className="flex flex-col items-center gap-0.5 rounded-[1.125rem] bg-surface-soft p-4">
+              <p className="text-[1.375rem] font-bold">{item.value}</p>
+              <p className="text-xs text-subtle">{item.label}</p>
             </li>
           ))}
         </ul>
 
         <Card className="border border-line bg-white">
-          <h2 className="text-sm font-bold">영역별 연습</h2>
+          <h2 className="text-sm font-bold text-muted">영역별 연습</h2>
           <ul className="mt-3 flex flex-col gap-3">
             {areas.map((area) => (
               <li key={area.id}>
                 <div className="flex items-center justify-between text-sm">
                   <span>{area.label}</span>
                   {area.badge && (
-                    <span className="rounded-full bg-[#f8e6a2] px-3.5 py-1.5 text-sm font-medium text-primary-ink">
+                    <span className="rounded-full bg-chip px-3 py-1.5 text-[0.8125rem] font-medium text-primary-ink">
                       배지
                     </span>
                   )}
                 </div>
                 <div
-                  className="mt-1.5 h-1.5 w-full rounded-full bg-surface-soft"
+                  className="mt-1.5 h-2 w-full rounded-full bg-chip"
                   role="progressbar"
                   aria-label={`${area.label} 진행률`}
                   aria-valuenow={area.progress}
@@ -82,7 +82,7 @@ export default function ChildGrowth() {
             {weakClues.map((clue) => (
               <li
                 key={clue}
-                className="rounded-full border border-primary-ink px-4 py-1.5 text-sm font-medium text-primary-ink"
+                className="rounded-full border border-clue-ink bg-clue-soft px-3 py-1.5 text-[0.8125rem] font-medium text-clue-ink"
               >
                 {clue}
               </li>
@@ -92,18 +92,18 @@ export default function ChildGrowth() {
 
         <Card className="border border-line bg-white">
           <h2 className="text-sm font-bold text-muted">최근 내가 직접 한 답</h2>
-          <p className="mt-2 text-sm leading-relaxed">“{latestAnswer.text}”</p>
+          <p className="mt-2 text-[0.9375rem] leading-[1.45]">“{latestAnswer.text}”</p>
           <div className="mt-3 flex gap-2">
-            <span className="rounded-full bg-[#f8e6a2] px-3.5 py-1.5 text-sm font-medium text-primary-ink">
+            <span className="rounded-full bg-chip px-3 py-1.5 text-[0.8125rem] font-medium text-primary-ink">
               ✏️ {latestAnswer.method}
             </span>
-            <span className="rounded-full border border-[#3f8a62] bg-[#f4fff8] px-4 py-1.5 text-sm font-medium text-[#3b7d58]">
+            <span className="rounded-full border border-success bg-success-soft px-3 py-1.5 text-[0.8125rem] font-medium text-success">
               {latestAnswer.result}
             </span>
           </div>
         </Card>
 
-        <p className="text-xs text-muted">
+        <p className="text-xs text-faint">
           심화 연습이 더 쌓이면 내 답이 어떻게 달라졌는지 비교해 볼 수 있어요
         </p>
       </main>
