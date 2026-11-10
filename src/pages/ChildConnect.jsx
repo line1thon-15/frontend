@@ -21,12 +21,12 @@ function TextField({ label, ...inputProps }) {
 
 export default function ChildConnect() {
   const navigate = useNavigate()
-  const [name, setName] = useState('')
+  const [nickname, setNickname] = useState('')
   const [grade, setGrade] = useState(null)
   const [pin, setPin] = useState('')
   const [shareMessage, setShareMessage] = useState('')
 
-  const canSubmit = name.trim() !== '' && grade !== null && pin.length === 4
+  const canSubmit = nickname.trim() !== '' && grade !== null && pin.length === 4
 
   const handlePinChange = (e) => {
     setPin(e.target.value.replace(/\D/g, '').slice(0, 4))
@@ -50,7 +50,7 @@ export default function ChildConnect() {
     e.preventDefault()
     if (!canSubmit) return
     // TODO: 백엔드 아이 등록 API 연동 후, 성공하면 G3 성장 요약 화면으로 이동
-    console.log('아이 연결 요청', { name, grade })
+    console.log('아이 연결 요청', { nickname, grade })
   }
 
   return (
@@ -74,10 +74,10 @@ export default function ChildConnect() {
 
       <div className="flex flex-col gap-5">
         <TextField
-          label="아이 이름 (별명도 괜찮아요)"
+          label="별명"
           placeholder="예: 하늘"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
+          value={nickname}
+          onChange={(e) => setNickname(e.target.value)}
         />
 
         <fieldset>
