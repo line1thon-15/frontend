@@ -67,7 +67,7 @@ export default function FirstSetup() {
 
   return (
     // 스크롤은 되지만 스크롤바는 숨김
-    <div className="h-screen overflow-y-auto bg-[#FFFBEE] text-[#3A2A12] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+    <div className="h-screen overflow-y-auto bg-page text-[#3A2A12] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
       <div className="flex min-h-full flex-col">
         <StatusBar />
         <Header title="처음 설정" />
