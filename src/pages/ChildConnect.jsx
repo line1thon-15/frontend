@@ -7,7 +7,7 @@ const GRADES = ['초등 고학년', '중학생', '고등학생']
 // TODO: 백엔드 아이 등록 API 응답의 로그인 코드로 교체
 const MOCK_LOGIN_CODE = 'ABC-1234'
 
-function TextField({ label, ...inputProps }) {
+function TextField({ label, hint, ...inputProps }) {
   return (
     <label className="block">
       <span className="mb-2 block text-sm">{label}</span>
@@ -15,6 +15,7 @@ function TextField({ label, ...inputProps }) {
         className="h-12 w-full rounded-2xl border border-line bg-white px-4 text-[0.9375rem] outline-none placeholder:text-muted focus:border-primary"
         {...inputProps}
       />
+      {hint && <span className="mt-2 block text-xs text-muted">{hint}</span>}
     </label>
   )
 }
@@ -61,8 +62,9 @@ export default function ChildConnect() {
 
       <div className="flex flex-col gap-5">
         <TextField
-          label="별명"
-          placeholder="예: 하늘"
+          label="아이 별명"
+          placeholder="예: 강아지"
+          hint="실명은 적지 않아도 돼요. 아이가 좋아하는 별명이면 충분해요."
           value={nickname}
           onChange={(e) => setNickname(e.target.value)}
         />
@@ -92,6 +94,7 @@ export default function ChildConnect() {
           inputMode="numeric"
           autoComplete="off"
           placeholder="••••"
+          hint="'연결 완료'를 누르면 아이 로그인 코드가 만들어져요."
           value={pin}
           onChange={handlePinChange}
         />
