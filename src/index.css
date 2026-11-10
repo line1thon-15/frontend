@@ -8,6 +8,7 @@
   --font-sans: "Noto Sans KR", sans-serif;
 
   /* 배경 */
+  --color-page: #fffdf7;             /* 화면 전체 배경 */
   --color-surface: #fffbee;          /* 화면 배경 (크림), StatusBar·Header */
   --color-surface-soft: #fff1c7;     /* 연노랑 박스, 상대 말풍선, Button soft */
   --color-surface-selected: #fff6d6; /* 선택된 Choice 배경 */
@@ -28,4 +29,9 @@
 
   /* 기타 */
   --color-accent: #ff9466;           /* 말풍선 프로필 (코랄) */
+  --color-mood: #ffd43b;             /* 감정 온도계 채워진 막대 */
+  --color-hint: #008556;             /* 힌트 초록 (테두리·글자) */
+  --color-hint-soft: #f1fff9;        /* 힌트 버튼·박스 배경 */
+  --color-subtle: #7a6a4c;           /* 설명·안내 글자 */
+  --color-badge: #ffe79a;            /* 연습 회차 칩 배경 */
 }
