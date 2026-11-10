@@ -31,7 +31,7 @@ function Card({ className = '', children }) {
 
 export default function ChildGrowth() {
   const navigate = useNavigate()
-  const { summary, areas } = MOCK
+  const { summary, areas, weakClues, latestAnswer } = MOCK
 
   return (
     <div className="flex min-h-screen flex-col bg-surface text-ink">
@@ -76,6 +76,36 @@ export default function ChildGrowth() {
           </ul>
         </Card>
 
+        <Card className="bg-surface-soft">
+          <h2 className="text-sm font-bold">더 연습이 필요한 단서</h2>
+          <ul className="mt-2 flex flex-wrap gap-2">
+            {weakClues.map((clue) => (
+              <li
+                key={clue}
+                className="rounded-full border border-primary-ink/60 bg-white/60 px-3 py-1 text-xs text-primary-ink"
+              >
+                {clue}
+              </li>
+            ))}
+          </ul>
+        </Card>
+
+        <Card className="border border-line bg-white">
+          <h2 className="text-sm font-bold">최근 내가 직접 한 답</h2>
+          <p className="mt-2 text-sm leading-relaxed">“{latestAnswer.text}”</p>
+          <div className="mt-3 flex gap-2">
+            <span className="rounded-full bg-primary/50 px-2.5 py-0.5 text-xs text-primary-ink">
+              ✎ {latestAnswer.method}
+            </span>
+            <span className="rounded-full border border-emerald-600/60 bg-mint-soft px-2.5 py-0.5 text-xs text-emerald-700">
+              {latestAnswer.result}
+            </span>
+          </div>
+        </Card>
+
+        <p className="text-xs text-muted">
+          심화 연습이 더 쌓이면 내 답이 어떻게 달라졌는지 비교해 볼 수 있어요
+        </p>
       </main>
 
       <div className="px-5 pt-4 pb-4">
