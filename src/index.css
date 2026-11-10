@@ -32,5 +32,9 @@
   --color-accent-soft: #ffd6c5;      /* 연한 코랄 (홈 상황 연습 아이콘 배경) */
   --color-mint-soft: #ddf5e8;        /* 연한 민트 (홈 성장 기록 아이콘 배경) */
   --color-progress: #fff5d6;         /* 영역별 진행 칩 배경 */
-  --color-subtle: #7a6a4c;           /* 카드 설명 글자 */
+  --color-subtle: #7a6a4c;           /* 설명·안내 글자 */
+  --color-mood: #ffd43b;             /* 감정 온도계 채워진 막대 */
+  --color-hint: #008556;             /* 힌트 초록 (테두리·글자) */
+  --color-hint-soft: #f1fff9;        /* 힌트 버튼·박스 배경 */
+  --color-badge: #ffe79a;            /* 연습 회차 칩 배경 */
 }
