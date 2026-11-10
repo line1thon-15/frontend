@@ -1,6 +1,9 @@
 import { Routes, Route } from 'react-router-dom'
 import Layout from './components/Layout.jsx'
-import Home from './pages/Home.jsx'
+import Start from './pages/Start.jsx'
+import ChildLogin from './pages/ChildLogin.jsx'
+import FirstSetup from './pages/FirstSetup.jsx'
+import ChildHome from './pages/ChildHome.jsx'
 import EmotionCheck from './pages/EmotionCheck.jsx'
 import PracticeChat from './pages/PracticeChat.jsx'
 import ComponentPreview from './pages/ComponentPreview.jsx'
@@ -11,7 +14,10 @@ export default function App() {
   return (
     <Layout>
       <Routes>
-        <Route path="/" element={<Home />} />
+        <Route path="/" element={<Start />} />
+        <Route path="/child/login" element={<ChildLogin />} />
+        <Route path="/child/setup" element={<FirstSetup />} />
+        <Route path="/home" element={<ChildHome />} />
         <Route path="/practice/:areaId" element={<EmotionCheck />} />
         <Route path="/practice/:areaId/chat" element={<PracticeChat />} />
         <Route path="/preview" element={<ComponentPreview />} />
