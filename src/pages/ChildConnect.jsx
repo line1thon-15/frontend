@@ -12,7 +12,7 @@ function TextField({ label, ...inputProps }) {
     <label className="block">
       <span className="mb-2 block text-sm">{label}</span>
       <input
-        className="h-12 w-full rounded-2xl border border-line bg-white px-4 text-[15px] outline-none placeholder:text-muted focus:border-primary disabled:opacity-60"
+        className="h-12 w-full rounded-2xl border border-line bg-white px-4 text-[0.9375rem] outline-none placeholder:text-muted focus:border-primary disabled:opacity-60"
         {...inputProps}
       />
     </label>
