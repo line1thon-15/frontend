@@ -45,6 +45,7 @@ export default function CodePinReset() {
   const { nickname, grade, oldCode, newCode } = MOCK
   const [pin, setPin] = useState('')
   const [pinConfirm, setPinConfirm] = useState('')
+  const [message, setMessage] = useState('')
 
   const isMismatch = pinConfirm.length === PIN_LENGTH && pin !== pinConfirm
   const canSubmit = pin.length === PIN_LENGTH && pin === pinConfirm
@@ -53,7 +54,21 @@ export default function CodePinReset() {
     e.preventDefault()
     if (!canSubmit) return
     // TODO: 백엔드 코드·PIN 재설정 API 연동
-    console.log('코드·PIN 재설정 요청')
+    setMessage('새 코드와 PIN으로 바꿨어요')
+  }
+
+  const handleShare = async () => {
+    const text = `아이 새 로그인 코드: ${newCode}`
+    try {
+      if (navigator.share) {
+        await navigator.share({ text })
+      } else {
+        await navigator.clipboard.writeText(newCode)
+        setMessage('새 코드를 복사했어요')
+      }
+    } catch {
+      // 공유 창을 닫은 경우 등은 무시
+    }
   }
 
   return (
@@ -94,6 +109,12 @@ export default function CodePinReset() {
           <Button type="submit" disabled={!canSubmit}>
             재설정 완료
           </Button>
+          <Button variant="outline" onClick={handleShare}>
+            새 코드 공유하기
+          </Button>
+          <p role="status" className="h-5 text-center text-sm text-muted">
+            {message}
+          </p>
         </div>
       </form>
 
