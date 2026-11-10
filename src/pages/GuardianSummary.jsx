@@ -1,4 +1,5 @@
 // G3 성장 요약 (보호자)
+import { useState } from 'react'
 import StatusBar from '../components/common/StatusBar.jsx'
 import HomeIndicator from '../components/common/HomeIndicator.jsx'
 
@@ -34,8 +35,58 @@ function callName(name) {
   return hasBatchim ? `${name}이` : name
 }
 
+// 지표 추이 꺾은선 그래프 (값은 0~100)
+function TrendChart({ weeks, values }) {
+  const width = 300
+  const height = 110
+  const padX = 18
+  const padY = 14
+  const points = values.map((value, i) => ({
+    x: padX + (i * (width - padX * 2)) / (values.length - 1),
+    y: height - padY - (value / 100) * (height - padY * 2),
+  }))
+  const last = points[points.length - 1]
+
+  return (
+    <div className="rounded-2xl bg-progress px-2 pt-2 pb-2">
+      <svg viewBox={`0 0 ${width} ${height}`} className="w-full" role="img" aria-label="주별 지표 추이">
+        {[0.33, 0.66].map((ratio) => (
+          <line
+            key={ratio}
+            x1="0"
+            x2={width}
+            y1={height * ratio}
+            y2={height * ratio}
+            className="stroke-line"
+            strokeWidth="1"
+          />
+        ))}
+        <polyline
+          points={points.map((p) => `${p.x},${p.y}`).join(' ')}
+          fill="none"
+          className="stroke-ink"
+          strokeWidth="2.5"
+          strokeLinejoin="round"
+        />
+        {points.slice(0, -1).map((p) => (
+          <circle key={p.x} cx={p.x} cy={p.y} r="4" className="fill-ink" />
+        ))}
+        <circle cx={last.x} cy={last.y} r="7" className="fill-primary stroke-ink" strokeWidth="2" />
+      </svg>
+      <ul className="mt-1 flex justify-between px-1 text-xs text-muted">
+        {weeks.map((week, i) => (
+          <li key={week} className={i === weeks.length - 1 ? 'font-bold text-ink' : ''}>
+            {week}
+          </li>
+        ))}
+      </ul>
+    </div>
+  )
+}
+
 export default function GuardianSummary() {
-  const { nickname, stats } = MOCK
+  const { nickname, stats, weeks, trends } = MOCK
+  const [metric, setMetric] = useState('first')
 
   return (
     <div className="flex min-h-screen flex-col bg-surface text-ink">
@@ -52,6 +103,29 @@ export default function GuardianSummary() {
             </li>
           ))}
         </ul>
+
+        <section className="rounded-3xl border border-line bg-white p-4">
+          <h2 className="text-sm font-bold">지표 추이</h2>
+          <div className="mt-2 mb-3 flex gap-2" role="tablist">
+            {Object.entries(trends).map(([key, trend]) => (
+              <button
+                key={key}
+                type="button"
+                role="tab"
+                aria-selected={metric === key}
+                onClick={() => setMetric(key)}
+                className={`rounded-full px-3 py-1 text-xs transition-colors ${
+                  metric === key
+                    ? 'border border-primary-ink bg-primary/60 font-bold text-primary-ink'
+                    : 'bg-progress text-primary-ink'
+                }`}
+              >
+                {trend.label}
+              </button>
+            ))}
+          </div>
+          <TrendChart weeks={weeks} values={trends[metric].values} />
+        </section>
 
       </main>
 
