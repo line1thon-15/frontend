@@ -9,7 +9,7 @@ export default function Bubble({ from = 'other', children }) {
     )
   }
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex items-start gap-2">
       <span className="size-8 shrink-0 rounded-full bg-accent" aria-hidden="true" />
       <p className="max-w-[75%] rounded-3xl bg-surface-soft px-4 py-2.5 text-sm text-ink">{children}</p>
     </div>
