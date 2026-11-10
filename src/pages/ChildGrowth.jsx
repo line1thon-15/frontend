@@ -25,9 +25,13 @@ const MOCK = {
   },
 }
 
+function Card({ className = '', children }) {
+  return <section className={`rounded-3xl p-4 ${className}`}>{children}</section>
+}
+
 export default function ChildGrowth() {
   const navigate = useNavigate()
-  const { summary } = MOCK
+  const { summary, areas } = MOCK
 
   return (
     <div className="flex min-h-screen flex-col bg-surface text-ink">
@@ -43,6 +47,34 @@ export default function ChildGrowth() {
             </li>
           ))}
         </ul>
+
+        <Card className="border border-line bg-white">
+          <h2 className="text-sm font-bold">영역별 연습</h2>
+          <ul className="mt-3 flex flex-col gap-3">
+            {areas.map((area) => (
+              <li key={area.id}>
+                <div className="flex items-center justify-between text-sm">
+                  <span>{area.label}</span>
+                  {area.badge && (
+                    <span className="rounded-full bg-primary/50 px-2.5 py-0.5 text-xs text-primary-ink">
+                      배지
+                    </span>
+                  )}
+                </div>
+                <div
+                  className="mt-1.5 h-1.5 w-full rounded-full bg-surface-soft"
+                  role="progressbar"
+                  aria-label={`${area.label} 진행률`}
+                  aria-valuenow={area.progress}
+                  aria-valuemin={0}
+                  aria-valuemax={100}
+                >
+                  <div className="h-full rounded-full bg-primary" style={{ width: `${area.progress}%` }} />
+                </div>
+              </li>
+            ))}
+          </ul>
+        </Card>
 
       </main>
 
