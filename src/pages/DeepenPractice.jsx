@@ -7,6 +7,7 @@ import Button from '../components/common/Button.jsx'
 import Bubble from '../components/common/Bubble.jsx'
 import HomeIndicator from '../components/common/HomeIndicator.jsx'
 import micIcon from '../assets/icons/mic.svg'
+import micListeningIcon from '../assets/icons/mic-listening.svg'
 
 // TODO: 백엔드(AI) 심화 연습 상황 API 연동 후 교체
 const MOCK = {
@@ -21,22 +22,13 @@ const MAX_LENGTH = 100
 // 입력 박스 안의 작은 버튼 (말로 할래요 · 글 쓸래요 · 다시 말하기)
 const MINI_BUTTON =
   'flex items-center gap-1 rounded-full border border-line bg-white px-3 py-1.5 text-[0.8125rem] leading-[1.45] font-medium text-primary-ink'
-const WAVE = [7, 13, 20, 14, 24, 18, 27, 21, 15, 22, 11, 17, 8, 6]
+const WAVE = [10, 16, 22, 14, 26, 18, 30, 22, 16, 28, 20, 12, 24, 16, 10, 18, 12, 8]
 
 const SpeechRecognition =
   typeof window !== 'undefined' ? window.SpeechRecognition || window.webkitSpeechRecognition : undefined
 
 function formatTime(seconds) {
   return `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, '0')}`
-}
-
-function MicIcon({ className = '' }) {
-  return (
-    <svg viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-      <rect x="9" y="3" width="6" height="11" rx="3" />
-      <path d="M5 11a7 7 0 0 0 14 0M12 18v3" strokeLinecap="round" />
-    </svg>
-  )
 }
 
 // mode: 'write'(글로 답하기) | 'speak'(말로 답하기)
@@ -197,27 +189,27 @@ export default function DeepenPractice({ initialMode = 'write' }) {
           </>
         ) : (
           <>
-            <section className="mt-2 rounded-[1.125rem] border-2 border-primary bg-white p-4 text-center">
-              <span className="mx-auto flex size-16 items-center justify-center rounded-full bg-surface-soft">
+            <section className="mt-2 flex flex-col items-center gap-2 rounded-[1.125rem] border-2 border-primary bg-white px-4 py-3.5">
+              <span className="flex size-16 items-center justify-center rounded-full bg-primary/25">
                 <span className="flex size-12 items-center justify-center rounded-full bg-primary">
-                  <MicIcon className="size-5" />
+                  <img src={micListeningIcon} alt="" className="size-[1.375rem]" />
                 </span>
               </span>
-              <p className="mt-2 text-base leading-[1.45] font-bold">
+              <p className="text-[0.9375rem] leading-[1.45] font-bold">
                 {speechError ? '말하기를 쓸 수 없어요' : `듣고 있어요… ${formatTime(seconds)}`}
               </p>
-              <div className="mt-2 flex h-7 items-center justify-center gap-[0.3rem]" aria-hidden="true">
+              <div className="flex h-[1.875rem] items-center justify-center gap-1" aria-hidden="true">
                 {WAVE.map((height, i) => (
-                  <span key={i} className="w-1 rounded-full bg-primary-strong" style={{ height }} />
+                  <span key={i} className="w-[3px] rounded-full bg-primary-strong" style={{ height }} />
                 ))}
               </div>
-              <div className="mt-2.5 rounded-xl bg-surface px-4 py-2.5 text-left">
-                <p className="text-xs leading-[1.45] text-faint">내가 한 말 · 녹음 파일은 저장하지 않아요</p>
-                <p role="status" className="mt-0.5 min-h-[1.45rem] text-base leading-[1.45]">
+              <div className="flex w-full flex-col gap-1 rounded-xl bg-[#fffaed] px-3.5 py-2.5 text-left">
+                <p className="text-xs leading-[1.45] font-medium text-faint">내가 한 말 · 녹음 파일은 저장하지 않아요</p>
+                <p role="status" className="min-h-[1.45rem] text-base leading-[1.45]">
                   {speechError || transcript}
                 </p>
               </div>
-              <div className="mt-2.5 flex justify-center gap-2">
+              <div className="flex justify-center gap-2">
                 <button type="button" onClick={() => setMode('write')} className={MINI_BUTTON}>
                   ✏️ 글로 쓸래요
                 </button>
