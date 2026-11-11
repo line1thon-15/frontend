@@ -108,7 +108,7 @@ export default function DeepenPractice({ initialMode = 'write' }) {
       type="button"
       onClick={handleHint}
       disabled={hintsLeft === 0}
-      className="h-14 flex-1 rounded-2xl border border-success bg-success-soft text-base font-bold text-success transition active:brightness-95 disabled:opacity-40"
+      className="h-14 flex-1 rounded-2xl border border-success bg-success-soft text-lg font-bold text-success transition active:brightness-95 disabled:opacity-40"
     >
       {hintsLeft === 0 ? '힌트를 다 썼어요' : '힌트 사용하기 💡'}
     </button>
@@ -121,10 +121,10 @@ export default function DeepenPractice({ initialMode = 'write' }) {
 
       <main className="flex flex-1 flex-col px-5 pt-2">
         <div className="flex gap-2">
-          <span className="rounded-full border border-primary bg-chip px-3 py-1 text-xs font-bold text-primary-ink">
+          <span className="rounded-full border border-primary bg-chip px-3 py-1.5 text-sm font-medium text-primary-ink">
             심화 {index} / {total}
           </span>
-          <span className="rounded-full border border-success bg-success-soft px-3 py-1 text-xs text-success">
+          <span className="rounded-full border-[0.8px] border-success bg-success-soft px-3 py-1.5 text-sm font-medium text-success">
             힌트 {hintsLeft}개 남음
           </span>
         </div>
@@ -136,11 +136,14 @@ export default function DeepenPractice({ initialMode = 'write' }) {
         </div>
 
         {visibleHints.length > 0 && (
-          <ul className="mt-3 rounded-2xl border border-success bg-success-soft px-4 py-3 text-sm text-success">
-            {visibleHints.map((hint) => (
-              <li key={hint}>💡 {hint}</li>
-            ))}
-          </ul>
+          <div className="mt-5 rounded-3xl border border-dashed border-success bg-success-soft px-5 py-3.5">
+            <p className="text-[0.9375rem] font-bold text-success">힌트</p>
+            <ul className="mt-1 text-[0.9375rem]">
+              {visibleHints.map((hint) => (
+                <li key={hint}>{hint}</li>
+              ))}
+            </ul>
+          </div>
         )}
 
         <p className="mt-4 text-sm text-muted">
