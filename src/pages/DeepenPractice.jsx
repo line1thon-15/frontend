@@ -123,8 +123,8 @@ export default function DeepenPractice({ initialMode = 'write' }) {
       <StatusBar />
       <Header title="심화 연습" />
 
-      <main className="flex flex-1 flex-col px-5 pt-2">
-        <div className="flex gap-2">
+      <main className="flex flex-1 flex-col px-5 pt-3">
+        <div className="flex gap-1.5">
           <span className="rounded-full border border-primary bg-chip px-3 py-1.5 text-sm font-medium text-primary-ink">
             심화 {index} / {total}
           </span>
@@ -133,14 +133,28 @@ export default function DeepenPractice({ initialMode = 'write' }) {
           </span>
         </div>
 
-        <div className="mt-3 flex flex-col gap-2">
+        <div className="mt-4 flex flex-col gap-3">
           {messages.map((message) => (
             <Bubble key={message}>{message}</Bubble>
           ))}
         </div>
 
         {visibleHints.length > 0 && (
-          <div className="mt-5 rounded-3xl border border-dashed border-success bg-success-soft px-5 py-3.5">
+          <div className="relative mt-5 rounded-3xl bg-success-soft px-5 py-3.5">
+            {/* 피그마처럼 긴 점선 테두리 (CSS dashed는 점 간격을 못 바꿔서 SVG로 그림, 연습 대화 화면과 같은 방식) */}
+            <svg className="pointer-events-none absolute inset-0 size-full overflow-visible" aria-hidden="true">
+              <rect
+                x="0.5"
+                y="0.5"
+                rx="24"
+                style={{ width: 'calc(100% - 1px)', height: 'calc(100% - 1px)' }}
+                fill="none"
+                stroke="var(--color-success)"
+                strokeWidth="1"
+                pathLength="960"
+                strokeDasharray="7 5"
+              />
+            </svg>
             <p className="text-[0.9375rem] font-bold text-success">힌트</p>
             <ul className="mt-1 text-[0.9375rem]">
               {visibleHints.map((hint) => (
