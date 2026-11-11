@@ -108,7 +108,7 @@ export default function DeepenPractice({ initialMode = 'write' }) {
       type="button"
       onClick={handleHint}
       disabled={hintsLeft === 0}
-      className="h-14 flex-1 rounded-2xl border border-success bg-success-soft text-lg font-bold text-success transition active:brightness-95 disabled:opacity-40"
+      className="h-14 flex-1 rounded-2xl border border-success bg-success-soft text-base font-bold text-success transition active:brightness-95 disabled:opacity-40"
     >
       {hintsLeft === 0 ? '힌트를 다 썼어요' : '힌트 사용하기 💡'}
     </button>
@@ -229,13 +229,13 @@ export default function DeepenPractice({ initialMode = 'write' }) {
         {mode === 'write' ? (
           <div className="flex gap-3">
             {hintButton}
-            <Button className="flex-1" disabled={!answer} onClick={handleSubmit}>
+            <Button className="flex-1 text-base!" disabled={!answer} onClick={handleSubmit}>
               보내기
             </Button>
           </div>
         ) : (
           <div className="flex flex-col gap-3">
-            <Button disabled={!answer} onClick={handleSubmit}>
+            <Button className="text-base!" disabled={!answer} onClick={handleSubmit}>
               다 말했어요
             </Button>
             <div className="flex">{hintButton}</div>
