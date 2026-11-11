@@ -16,13 +16,13 @@ export default function DeepenIntro() {
   const { areaLabel, progress } = MOCK
 
   return (
-    <div className="flex min-h-screen flex-col bg-surface text-ink">
+    <div className="flex min-h-screen flex-col bg-page text-ink">
       <StatusBar />
 
-      <main className="flex flex-1 flex-col items-center justify-center px-5 pb-10 text-center">
+      <main className="flex flex-1 flex-col items-center justify-center px-5 pb-14 text-center">
         <img src={celebrate} alt="" className="w-[10.5rem]" />
-        <h1 className="mt-6 text-[1.375rem] font-bold">축하합니다 !</h1>
-        <p className="mt-3 text-sm leading-relaxed text-primary-ink">
+        <h1 className="mt-4 text-2xl leading-[1.45] font-bold">축하합니다 !</h1>
+        <p className="mt-2 text-[0.8125rem] leading-[1.45] font-medium text-primary-ink">
           {areaLabel}
           <br />
           학습률 {progress}% 달성 완료
@@ -31,8 +31,10 @@ export default function DeepenIntro() {
 
       <div className="flex flex-col gap-3 px-5 pb-4">
         {/* TODO: 심화 연습 첫 화면(Y7-1 글로 답하기)이 구현되면 경로 확인 */}
-        <Button onClick={() => navigate('/child/deepen/write')}>심화 학습으로 넘어가기</Button>
-        <Button variant="outline" onClick={() => navigate('/home')}>
+        <Button className="text-base!" onClick={() => navigate('/child/deepen/write')}>
+          심화 학습으로 넘어가기
+        </Button>
+        <Button variant="outline" className="text-base!" onClick={() => navigate('/home')}>
           홈으로
         </Button>
       </div>
