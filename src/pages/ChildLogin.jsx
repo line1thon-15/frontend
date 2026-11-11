@@ -32,7 +32,7 @@ export default function ChildLogin() {
   }
 
   return (
-    <div className={`flex min-h-screen flex-col bg-[#FFFBEE] text-[#3A2A12] ${bigText ? 'text-lg' : ''}`}>
+    <div className={`flex min-h-screen flex-col bg-page text-[#3A2A12] ${bigText ? 'text-lg' : ''}`}>
       <StatusBar />
       <Header title="아이 로그인" />
 
