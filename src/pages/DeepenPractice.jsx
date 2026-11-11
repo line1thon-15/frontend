@@ -6,6 +6,7 @@ import Header from '../components/common/Header.jsx'
 import Button from '../components/common/Button.jsx'
 import Bubble from '../components/common/Bubble.jsx'
 import HomeIndicator from '../components/common/HomeIndicator.jsx'
+import micIcon from '../assets/icons/mic.svg'
 
 // TODO: 백엔드(AI) 심화 연습 상황 API 연동 후 교체
 const MOCK = {
@@ -17,6 +18,9 @@ const MOCK = {
 }
 
 const MAX_LENGTH = 100
+// 입력 박스 안의 작은 버튼 (말로 할래요 · 글 쓸래요 · 다시 말하기)
+const MINI_BUTTON =
+  'flex items-center gap-1 rounded-full border border-line bg-white px-3 py-1.5 text-[0.8125rem] leading-[1.45] font-medium text-primary-ink'
 const WAVE = [10, 18, 28, 20, 34, 26, 38, 30, 22, 32, 16, 24, 12, 8]
 
 const SpeechRecognition =
@@ -108,7 +112,7 @@ export default function DeepenPractice({ initialMode = 'write' }) {
       type="button"
       onClick={handleHint}
       disabled={hintsLeft === 0}
-      className="h-14 flex-1 rounded-2xl border border-success bg-success-soft text-base font-bold text-success transition active:brightness-95 disabled:opacity-40"
+      className="h-14 flex-1 rounded-2xl border border-success bg-success-soft text-lg font-bold text-success transition active:brightness-95 disabled:opacity-40"
     >
       {hintsLeft === 0 ? '힌트를 다 썼어요' : '힌트 사용하기 💡'}
     </button>
@@ -146,13 +150,13 @@ export default function DeepenPractice({ initialMode = 'write' }) {
           </div>
         )}
 
-        <p className="mt-4 text-sm text-muted">
+        <p className="mt-4 text-sm leading-[1.45] font-medium text-subtle">
           이럴 때 나는 뭐라고 할까요? {mode === 'write' ? '직접 써 보세요' : '말로 해 보세요'}
         </p>
 
         {mode === 'write' ? (
           <>
-            <section className="mt-2 rounded-2xl border-2 border-primary bg-white p-4">
+            <section className="mt-2 rounded-[1.125rem] border-2 border-primary bg-white p-4">
               <label className="sr-only" htmlFor="deepen-answer">
                 내 답
               </label>
@@ -162,28 +166,24 @@ export default function DeepenPractice({ initialMode = 'write' }) {
                 maxLength={MAX_LENGTH}
                 onChange={(e) => setText(e.target.value)}
                 placeholder="여기에 써 보세요"
-                rows={3}
-                className="w-full resize-none bg-transparent text-[0.9375rem] leading-relaxed outline-none placeholder:text-muted"
+                rows={2}
+                className="field-sizing-content w-full resize-none bg-transparent text-base leading-[1.45] outline-none placeholder:text-muted"
               />
-              <div className="mt-2 flex items-center justify-between">
-                <button
-                  type="button"
-                  onClick={() => setMode('speak')}
-                  className="flex items-center gap-1 rounded-full border border-line px-3 py-1 text-xs text-primary-ink"
-                >
-                  <MicIcon className="size-4" />
+              <div className="mt-2.5 flex items-center justify-between">
+                <button type="button" onClick={() => setMode('speak')} className={MINI_BUTTON}>
+                  <img src={micIcon} alt="" className="size-4" />
                   말로 할래요
                 </button>
-                <span className="text-xs text-muted">
+                <span className="text-xs leading-[1.45] text-faint">
                   {text.length} / {MAX_LENGTH}
                 </span>
               </div>
             </section>
-            <p className="mt-3 text-xs text-muted">정답은 없어요. 내 말로 편하게 써도 괜찮아요.</p>
+            <p className="mt-3 text-xs leading-[1.45] text-faint">정답은 없어요. 내 말로 편하게 써도 괜찮아요.</p>
           </>
         ) : (
           <>
-            <section className="mt-2 rounded-2xl border-2 border-primary bg-white p-4 text-center">
+            <section className="mt-2 rounded-[1.125rem] border-2 border-primary bg-white p-4 text-center">
               <span className="mx-auto flex size-14 items-center justify-center rounded-full bg-primary/30">
                 <span className="flex size-10 items-center justify-center rounded-full bg-primary">
                   <MicIcon className="size-5" />
@@ -204,23 +204,15 @@ export default function DeepenPractice({ initialMode = 'write' }) {
                 </p>
               </div>
               <div className="mt-3 flex justify-center gap-2">
-                <button
-                  type="button"
-                  onClick={() => setMode('write')}
-                  className="rounded-full border border-line px-3 py-1 text-xs text-primary-ink"
-                >
-                  ✎ 글 쓸래요
+                <button type="button" onClick={() => setMode('write')} className={MINI_BUTTON}>
+                  ✏️ 글로 쓸래요
                 </button>
-                <button
-                  type="button"
-                  onClick={startListening}
-                  className="rounded-full border border-line px-3 py-1 text-xs text-primary-ink"
-                >
+                <button type="button" onClick={startListening} className={MINI_BUTTON}>
                   다시 말하기
                 </button>
               </div>
             </section>
-            <p className="mt-3 text-xs text-muted">말한 내용은 글자로 바뀌어요. 정답은 없으니 편하게 말해요.</p>
+            <p className="mt-3 text-xs leading-[1.45] text-faint">말한 내용은 글자로 바뀌어요. 정답은 없으니 편하게 말해요.</p>
           </>
         )}
       </main>
@@ -229,13 +221,13 @@ export default function DeepenPractice({ initialMode = 'write' }) {
         {mode === 'write' ? (
           <div className="flex gap-3">
             {hintButton}
-            <Button className="flex-1 text-base!" disabled={!answer} onClick={handleSubmit}>
+            <Button className="flex-1" disabled={!answer} onClick={handleSubmit}>
               보내기
             </Button>
           </div>
         ) : (
           <div className="flex flex-col gap-3">
-            <Button className="text-base!" disabled={!answer} onClick={handleSubmit}>
+            <Button disabled={!answer} onClick={handleSubmit}>
               다 말했어요
             </Button>
             <div className="flex">{hintButton}</div>
