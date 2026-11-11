@@ -7,7 +7,6 @@ import Button from '../components/common/Button.jsx'
 import Bubble from '../components/common/Bubble.jsx'
 import HomeIndicator from '../components/common/HomeIndicator.jsx'
 import micIcon from '../assets/icons/mic.svg'
-import micListeningIcon from '../assets/icons/mic-listening.svg'
 
 // TODO: 백엔드(AI) 심화 연습 상황 API 연동 후 교체
 const MOCK = {
@@ -40,6 +39,7 @@ export default function DeepenPractice({ initialMode = 'write' }) {
   const [transcript, setTranscript] = useState('')
   const [seconds, setSeconds] = useState(0)
   const [speechError, setSpeechError] = useState('')
+  const [listening, setListening] = useState(false)
   const [hintsUsed, setHintsUsed] = useState(0)
   const recognitionRef = useRef(null)
 
@@ -51,6 +51,7 @@ export default function DeepenPractice({ initialMode = 'write' }) {
     setTranscript('')
     setSeconds(0)
     setSpeechError('')
+    recognitionRef.current?.stop()
     if (!SpeechRecognition) {
       setSpeechError('이 기기에서는 말하기를 쓸 수 없어요. 글로 써 주세요.')
       return
@@ -63,9 +64,14 @@ export default function DeepenPractice({ initialMode = 'write' }) {
       recognition.onresult = (event) => {
         setTranscript(Array.from(event.results, (result) => result[0].transcript).join(' '))
       }
-      recognition.onerror = () => setSpeechError('마이크를 쓸 수 없어요. 글로 써 주세요.')
+      recognition.onerror = () => {
+        setSpeechError('마이크를 쓸 수 없어요. 글로 써 주세요.')
+        setListening(false)
+      }
+      recognition.onend = () => setListening(false)
       recognition.start()
       recognitionRef.current = recognition
+      setListening(true)
     } catch {
       setSpeechError('말하기를 시작하지 못했어요. 글로 써 주세요.')
     }
@@ -74,17 +80,17 @@ export default function DeepenPractice({ initialMode = 'write' }) {
   const stopListening = () => {
     recognitionRef.current?.stop()
     recognitionRef.current = null
+    setListening(false)
   }
 
+  // 마이크는 사용자가 직접 눌러야 시작해요. 말하는 시간은 듣는 동안에만 올라가요.
   useEffect(() => {
-    if (mode !== 'speak') return undefined
-    startListening()
+    if (!listening) return undefined
     const timer = setInterval(() => setSeconds((value) => value + 1), 1000)
-    return () => {
-      clearInterval(timer)
-      stopListening()
-    }
-  }, [mode])
+    return () => clearInterval(timer)
+  }, [listening])
+
+  useEffect(() => () => recognitionRef.current?.stop(), [])
 
   const handleHint = () => {
     if (hintsLeft > 0) setHintsUsed((value) => value + 1)
@@ -190,17 +196,37 @@ export default function DeepenPractice({ initialMode = 'write' }) {
         ) : (
           <>
             <section className="mt-2 flex flex-col items-center gap-2 rounded-[1.125rem] border-2 border-primary bg-white px-4 py-3.5">
-              <span className="flex size-16 items-center justify-center rounded-full bg-primary/25">
+              <button
+                type="button"
+                onClick={listening ? stopListening : startListening}
+                disabled={Boolean(speechError)}
+                aria-label={listening ? '말하기 멈추기' : '말하기 시작'}
+                className="flex size-16 items-center justify-center rounded-full bg-primary/25 transition active:scale-95 disabled:opacity-40"
+              >
                 <span className="flex size-12 items-center justify-center rounded-full bg-primary">
-                  <img src={micListeningIcon} alt="" className="size-[1.375rem]" />
+                  {listening ? (
+                    <span className="size-4 rounded-[3px] bg-ink" />
+                  ) : (
+                    <img src={micIcon} alt="" className="size-[1.375rem]" />
+                  )}
                 </span>
-              </span>
+              </button>
               <p className="text-[0.9375rem] leading-[1.45] font-bold">
-                {speechError ? '말하기를 쓸 수 없어요' : `듣고 있어요… ${formatTime(seconds)}`}
+                {speechError
+                  ? '말하기를 쓸 수 없어요'
+                  : listening
+                    ? `듣고 있어요… ${formatTime(seconds)}`
+                    : transcript
+                      ? '다 들었어요'
+                      : '마이크를 눌러서 말해 보세요'}
               </p>
               <div className="flex h-[1.875rem] items-center justify-center gap-1" aria-hidden="true">
                 {WAVE.map((height, i) => (
-                  <span key={i} className="w-[3px] rounded-full bg-primary-strong" style={{ height }} />
+                  <span
+                    key={i}
+                    className={`w-[3px] rounded-full bg-primary-strong ${listening ? 'animate-pulse' : 'opacity-40'}`}
+                    style={{ height, animationDelay: `${(i % 6) * 120}ms` }}
+                  />
                 ))}
               </div>
               <div className="flex w-full flex-col gap-1 rounded-xl bg-[#fffaed] px-3.5 py-2.5 text-left">
@@ -213,9 +239,11 @@ export default function DeepenPractice({ initialMode = 'write' }) {
                 <button type="button" onClick={() => setMode('write')} className={MINI_BUTTON}>
                   ✏️ 글로 쓸래요
                 </button>
-                <button type="button" onClick={startListening} className={MINI_BUTTON}>
-                  다시 말하기
-                </button>
+                {!listening && transcript && (
+                  <button type="button" onClick={startListening} className={MINI_BUTTON}>
+                    다시 말하기
+                  </button>
+                )}
               </div>
             </section>
             <p className="mt-3 text-xs leading-[1.45] text-faint">말한 내용은 글자로 바뀌어요. 정답은 없으니 편하게 말해요.</p>
@@ -233,7 +261,7 @@ export default function DeepenPractice({ initialMode = 'write' }) {
           </div>
         ) : (
           <div className="flex flex-col gap-3">
-            <Button disabled={!answer} onClick={handleSubmit}>
+            <Button disabled={!answer || listening} onClick={handleSubmit}>
               다 말했어요
             </Button>
             <div className="flex">{hintButton}</div>
