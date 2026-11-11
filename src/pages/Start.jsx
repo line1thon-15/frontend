@@ -9,7 +9,7 @@ export default function Start() {
   const navigate = useNavigate()
 
   return (
-    <div className="flex min-h-screen flex-col bg-[#FFFBEE] text-[#3A2A12]">
+    <div className="flex min-h-screen flex-col bg-page text-[#3A2A12]">
       <StatusBar />
 
       <main className="flex flex-1 flex-col items-center justify-center px-6 text-center">
