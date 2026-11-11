@@ -21,7 +21,7 @@ const MAX_LENGTH = 100
 // 입력 박스 안의 작은 버튼 (말로 할래요 · 글 쓸래요 · 다시 말하기)
 const MINI_BUTTON =
   'flex items-center gap-1 rounded-full border border-line bg-white px-3 py-1.5 text-[0.8125rem] leading-[1.45] font-medium text-primary-ink'
-const WAVE = [10, 18, 28, 20, 34, 26, 38, 30, 22, 32, 16, 24, 12, 8]
+const WAVE = [7, 13, 20, 14, 24, 18, 27, 21, 15, 22, 11, 17, 8, 6]
 
 const SpeechRecognition =
   typeof window !== 'undefined' ? window.SpeechRecognition || window.webkitSpeechRecognition : undefined
@@ -184,26 +184,26 @@ export default function DeepenPractice({ initialMode = 'write' }) {
         ) : (
           <>
             <section className="mt-2 rounded-[1.125rem] border-2 border-primary bg-white p-4 text-center">
-              <span className="mx-auto flex size-14 items-center justify-center rounded-full bg-primary/30">
-                <span className="flex size-10 items-center justify-center rounded-full bg-primary">
+              <span className="mx-auto flex size-16 items-center justify-center rounded-full bg-surface-soft">
+                <span className="flex size-12 items-center justify-center rounded-full bg-primary">
                   <MicIcon className="size-5" />
                 </span>
               </span>
-              <p className="mt-2 text-sm font-bold">
+              <p className="mt-2 text-base leading-[1.45] font-bold">
                 {speechError ? '말하기를 쓸 수 없어요' : `듣고 있어요… ${formatTime(seconds)}`}
               </p>
-              <div className="mt-2 flex h-10 items-center justify-center gap-1" aria-hidden="true">
+              <div className="mt-2 flex h-7 items-center justify-center gap-[0.3rem]" aria-hidden="true">
                 {WAVE.map((height, i) => (
                   <span key={i} className="w-1 rounded-full bg-primary-strong" style={{ height }} />
                 ))}
               </div>
-              <div className="mt-2 rounded-xl bg-surface px-3 py-2 text-left">
-                <p className="text-xs text-muted">내가 한 말 · 녹음 파일은 저장하지 않아요</p>
-                <p role="status" className="mt-1 min-h-6 text-[0.9375rem] leading-relaxed">
+              <div className="mt-2.5 rounded-xl bg-surface px-4 py-2.5 text-left">
+                <p className="text-xs leading-[1.45] text-faint">내가 한 말 · 녹음 파일은 저장하지 않아요</p>
+                <p role="status" className="mt-0.5 min-h-[1.45rem] text-base leading-[1.45]">
                   {speechError || transcript}
                 </p>
               </div>
-              <div className="mt-3 flex justify-center gap-2">
+              <div className="mt-2.5 flex justify-center gap-2">
                 <button type="button" onClick={() => setMode('write')} className={MINI_BUTTON}>
                   ✏️ 글로 쓸래요
                 </button>
