@@ -108,23 +108,23 @@ export default function DeepenPractice({ initialMode = 'write' }) {
       type="button"
       onClick={handleHint}
       disabled={hintsLeft === 0}
-      className="h-14 flex-1 rounded-2xl border-[1.5px] border-emerald-700/70 bg-mint-soft text-lg font-bold text-emerald-800 transition active:brightness-95 disabled:opacity-40"
+      className="h-14 flex-1 rounded-2xl border border-success bg-success-soft text-base font-bold text-success transition active:brightness-95 disabled:opacity-40"
     >
       {hintsLeft === 0 ? '힌트를 다 썼어요' : '힌트 사용하기 💡'}
     </button>
   )
 
   return (
-    <div className="flex min-h-screen flex-col bg-surface text-ink">
+    <div className="flex min-h-screen flex-col bg-page text-ink">
       <StatusBar />
       <Header title="심화 연습" />
 
       <main className="flex flex-1 flex-col px-5 pt-2">
         <div className="flex gap-2">
-          <span className="rounded-full bg-primary/50 px-3 py-1 text-xs font-bold text-primary-ink">
+          <span className="rounded-full border border-primary bg-chip px-3 py-1 text-xs font-bold text-primary-ink">
             심화 {index} / {total}
           </span>
-          <span className="rounded-full border border-emerald-700/70 px-3 py-1 text-xs text-emerald-800">
+          <span className="rounded-full border border-success bg-success-soft px-3 py-1 text-xs text-success">
             힌트 {hintsLeft}개 남음
           </span>
         </div>
@@ -136,7 +136,7 @@ export default function DeepenPractice({ initialMode = 'write' }) {
         </div>
 
         {visibleHints.length > 0 && (
-          <ul className="mt-3 rounded-2xl border border-emerald-700/50 bg-mint-soft px-4 py-3 text-sm text-emerald-800">
+          <ul className="mt-3 rounded-2xl border border-success bg-success-soft px-4 py-3 text-sm text-success">
             {visibleHints.map((hint) => (
               <li key={hint}>💡 {hint}</li>
             ))}
