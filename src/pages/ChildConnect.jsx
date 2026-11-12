@@ -86,7 +86,7 @@ export default function ChildConnect() {
             type="password"
             inputMode="numeric"
             autoComplete="off"
-            placeholder="●●●●"
+            placeholder="● ● ● ●"
             hintGap="mt-4"
             hint="'연결 완료'를 누르면 아이 로그인 코드가 만들어져요."
             value={pin}
