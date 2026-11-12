@@ -5,8 +5,11 @@ import StatusBar from '../components/common/StatusBar.jsx'
 import Header from '../components/common/Header.jsx'
 import Button from '../components/common/Button.jsx'
 import HomeIndicator from '../components/common/HomeIndicator.jsx'
+import { loginChild } from '../api/auth.js'
+import { toMessage } from '../api/errors.js'
 
 const PIN_LENGTH = 4
+const CODE_LENGTH = 6
 
 function speak(text) {
   if (!('speechSynthesis' in window)) return
@@ -22,13 +25,23 @@ export default function ChildLogin() {
   const [pin, setPin] = useState('')
   const [pinFocused, setPinFocused] = useState(false)
   const [bigText, setBigText] = useState(false)
+  const [submitting, setSubmitting] = useState(false)
+  const [error, setError] = useState('')
 
-  const canSubmit = code.trim().length > 0 && pin.length === PIN_LENGTH
+  const canSubmit = code.length === CODE_LENGTH && pin.length === PIN_LENGTH && !submitting
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!canSubmit) return
-    // TODO: 아이 로그인 API 연동 (코드 + PIN)
-    navigate('/child/setup')
+    setSubmitting(true)
+    setError('')
+    try {
+      const { first_login: firstLogin } = await loginChild({ linkCode: code, pin })
+      // 처음 로그인이면 첫 설정으로, 아니면 바로 홈으로
+      navigate(firstLogin ? '/child/setup' : '/home')
+    } catch (err) {
+      setError(toMessage(err, { INVALID_CODE_OR_PIN: '코드나 비밀번호가 맞지 않아요. 다시 확인해 볼까요?' }))
+      setSubmitting(false)
+    }
   }
 
   return (
@@ -49,7 +62,7 @@ export default function ChildLogin() {
         <input
           id="child-code"
           value={code}
-          onChange={(e) => setCode(e.target.value.toUpperCase())}
+          onChange={(e) => setCode(e.target.value.replace(/[^A-Za-z0-9]/g, '').toUpperCase().slice(0, CODE_LENGTH))}
           placeholder="ABC-1234"
           autoComplete="off"
           className="h-14 w-full rounded-2xl border border-[#F0E2BF] bg-white px-4 outline-none placeholder:text-[#3A2A12]/35 focus:border-[#F2B300]"
@@ -87,6 +100,12 @@ export default function ChildLogin() {
             className="absolute bottom-0 left-0 h-px w-px opacity-0"
           />
         </label>
+
+        {error && (
+          <p role="alert" className={`mt-4 text-[#b4234a] ${bigText ? 'text-base' : 'text-sm'}`}>
+            {error}
+          </p>
+        )}
 
         <div className="mt-6 flex gap-2">
           <button

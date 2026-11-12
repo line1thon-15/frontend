@@ -1,9 +1,12 @@
 // G1 가입·동의 (보호자 가입)
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import StatusBar from '../components/common/StatusBar.jsx'
 import Header from '../components/common/Header.jsx'
 import Button from '../components/common/Button.jsx'
 import HomeIndicator from '../components/common/HomeIndicator.jsx'
+import { registerGuardian } from '../api/auth.js'
+import { toMessage } from '../api/errors.js'
 
 const AGREEMENTS = [
   { id: 'terms', label: '[필수] 서비스 이용약관', required: true },
@@ -46,13 +49,16 @@ function TextField({ label, ...inputProps }) {
 }
 
 export default function GuardianSignup() {
+  const navigate = useNavigate()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [agreed, setAgreed] = useState({})
+  const [submitting, setSubmitting] = useState(false)
+  const [error, setError] = useState('')
 
   const allAgreed = AGREEMENTS.every((item) => agreed[item.id])
   const requiredAgreed = AGREEMENTS.filter((item) => item.required).every((item) => agreed[item.id])
-  const canSubmit = EMAIL_PATTERN.test(email) && password.length >= 8 && requiredAgreed
+  const canSubmit = EMAIL_PATTERN.test(email) && password.length >= 8 && requiredAgreed && !submitting
 
   const toggleAll = () => {
     const next = !allAgreed
@@ -61,11 +67,18 @@ export default function GuardianSignup() {
 
   const toggleOne = (id) => setAgreed((prev) => ({ ...prev, [id]: !prev[id] }))
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
     if (!canSubmit) return
-    // TODO: 백엔드 회원가입 API 연동 후, 성공하면 G2 아이 연결 화면으로 이동
-    console.log('보호자 가입 요청', { email, agreed })
+    setSubmitting(true)
+    setError('')
+    try {
+      await registerGuardian({ email, password })
+      navigate('/guardian/connect')
+    } catch (err) {
+      setError(toMessage(err, { EMAIL_TAKEN: '이미 가입된 이메일이에요.' }))
+      setSubmitting(false)
+    }
   }
 
   return (
@@ -109,6 +122,12 @@ export default function GuardianSignup() {
         </div>
 
         <p className="mt-4 text-xs leading-[1.45] text-faint">지능지수나 진단 정보는 묻지 않아요</p>
+
+        {error && (
+          <p role="alert" className="mt-3 text-sm leading-[1.45] text-[#b4234a]">
+            {error}
+          </p>
+        )}
 
         <Button type="submit" disabled={!canSubmit} className="mt-auto text-base!">
           가입하기

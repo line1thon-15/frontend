@@ -5,11 +5,10 @@ import StatusBar from '../components/common/StatusBar.jsx'
 import Header from '../components/common/Header.jsx'
 import Button from '../components/common/Button.jsx'
 import HomeIndicator from '../components/common/HomeIndicator.jsx'
+import { registerChild } from '../api/children.js'
+import { toMessage } from '../api/errors.js'
 
 const GRADES = ['초등 고학년', '중학생', '고등학생']
-
-// TODO: 백엔드 아이 등록 API 응답의 로그인 코드로 교체
-const MOCK_LOGIN_CODE = 'ABC-1234'
 
 function TextField({ label, hint, hintGap = 'mt-2', ...inputProps }) {
   return (
@@ -29,20 +28,33 @@ export default function ChildConnect() {
   const [nickname, setNickname] = useState('')
   const [grade, setGrade] = useState(null)
   const [pin, setPin] = useState('')
+  const [submitting, setSubmitting] = useState(false)
+  const [error, setError] = useState('')
 
-  const canSubmit = nickname.trim() !== '' && grade !== null && pin.length === 4
+  const canSubmit = nickname.trim() !== '' && grade !== null && pin.length === 4 && !submitting
 
   const handlePinChange = (e) => {
     setPin(e.target.value.replace(/\D/g, '').slice(0, 4))
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
     if (!canSubmit) return
-    // TODO: 백엔드 아이 등록 API 연동 — 응답의 로그인 코드를 넘기기
-    navigate('/guardian/connect/done', {
-      state: { nickname: nickname.trim(), grade, loginCode: MOCK_LOGIN_CODE },
-    })
+    setSubmitting(true)
+    setError('')
+    try {
+      const child = await registerChild({ nickname: nickname.trim(), grade, pin })
+      navigate('/guardian/connect/done', {
+        state: { nickname: child.nickname, grade, loginCode: child.link_code },
+      })
+    } catch (err) {
+      setError(
+        toMessage(err, {
+          UNAUTHENTICATED: '로그인이 필요해요. 가입 화면부터 다시 해 주세요.',
+        }),
+      )
+      setSubmitting(false)
+    }
   }
 
   return (
@@ -93,6 +105,12 @@ export default function ChildConnect() {
             onChange={handlePinChange}
           />
         </div>
+
+        {error && (
+          <p role="alert" className="mt-3 text-sm leading-[1.45] text-[#b4234a]">
+            {error}
+          </p>
+        )}
 
         <div className="mt-auto py-2">
           <Button type="submit" disabled={!canSubmit} className="text-base!">
