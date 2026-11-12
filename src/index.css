@@ -35,10 +35,10 @@
   --color-subtle: #7a6a4c;           /* 카드 설명 글자 */
 
   /* Figma 명세 추가 색 */
-  --color-chip: #ffe79a;
-  --color-clue-soft: #fff1c2;
-  --color-clue-ink: #8a6100;
-  --color-success: #008556;
-  --color-success-soft: #f1fff9;
-  --color-faint: #9c8a66;
+  --color-chip: #ffe79a;             /* 배지·칩 배경, 진행 바 바탕 */
+  --color-clue-soft: #fff1c2;        /* 단서 칩 배경 */
+  --color-clue-ink: #8a6100;         /* 단서 칩 테두리·글자 */
+  --color-success: #008556;          /* 초록 칩·힌트 버튼·결과 박스 테두리·글자 */
+  --color-success-soft: #f1fff9;     /* 초록 칩·힌트 버튼·결과 박스 배경 */
+  --color-faint: #9c8a66;            /* 가장 연한 안내 문구 */
 }

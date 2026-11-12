@@ -16,14 +16,14 @@ const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
 function Checkbox({ checked, onChange, label }) {
   return (
-    <label className="flex cursor-pointer items-center gap-3 text-[0.9375rem]">
+    <label className="flex cursor-pointer items-center gap-2.5 text-sm leading-[1.45]">
       <input type="checkbox" className="peer sr-only" checked={checked} onChange={onChange} />
       <span
         aria-hidden
-        className="flex size-6 shrink-0 items-center justify-center rounded-md border-2 border-line-strong bg-white peer-checked:border-primary peer-checked:bg-primary peer-focus-visible:ring-2 peer-focus-visible:ring-primary/50"
+        className="flex size-5 shrink-0 items-center justify-center rounded-[0.25rem] border-[1.5px] border-[#c9b27a] peer-checked:border-primary-strong peer-checked:bg-primary peer-focus-visible:ring-2 peer-focus-visible:ring-primary/50"
       >
         {checked && (
-          <svg viewBox="0 0 16 16" className="size-4 text-white" fill="none" stroke="currentColor" strokeWidth="2.5">
+          <svg viewBox="0 0 16 16" className="size-3.5 text-ink" fill="none" stroke="currentColor" strokeWidth="2.5">
             <path d="M3.5 8.5l3 3 6-7" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
         )}
@@ -36,9 +36,9 @@ function Checkbox({ checked, onChange, label }) {
 function TextField({ label, ...inputProps }) {
   return (
     <label className="block">
-      <span className="mb-2 block text-sm">{label}</span>
+      <span className="mb-1.5 block text-sm leading-[1.45] font-medium text-muted">{label}</span>
       <input
-        className="h-12 w-full rounded-2xl border border-line bg-white px-4 text-[0.9375rem] outline-none placeholder:text-muted focus:border-primary"
+        className="w-full rounded-[1.125rem] border border-line bg-white px-4 py-3.5 text-base leading-[1.45] outline-none placeholder:text-[#b8a57e] focus:border-primary-strong"
         {...inputProps}
       />
     </label>
@@ -69,14 +69,14 @@ export default function GuardianSignup() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col bg-surface text-ink">
+    <div className="flex min-h-screen flex-col bg-page text-ink">
       <StatusBar />
       <Header title="보호자 가입" />
 
-      <form onSubmit={handleSubmit} className="flex flex-1 flex-col px-5 pb-4">
-        <h2 className="mt-4 mb-6 text-xl font-bold">보호자 계정을 만들어요</h2>
+      <form onSubmit={handleSubmit} className="flex flex-1 flex-col px-5 pt-3 pb-4">
+        <h2 className="mb-4 text-[1.375rem] leading-[1.45] font-bold">보호자 계정을 만들어요</h2>
 
-        <div className="flex flex-col gap-5">
+        <div className="flex flex-col gap-4">
           <TextField
             label="이메일"
             type="email"
@@ -95,24 +95,22 @@ export default function GuardianSignup() {
           />
         </div>
 
-        <div className="mt-6 rounded-3xl bg-surface-soft p-5">
+        <div className="mt-4 flex flex-col gap-3 rounded-[1.125rem] bg-[#fff3d1] p-4">
           <Checkbox checked={allAgreed} onChange={toggleAll} label="모두 동의하기" />
-          <hr className="my-4 border-line" />
-          <div className="flex flex-col gap-3">
-            {AGREEMENTS.map((item) => (
-              <Checkbox
-                key={item.id}
-                checked={!!agreed[item.id]}
-                onChange={() => toggleOne(item.id)}
-                label={item.label}
-              />
-            ))}
-          </div>
+          <div className="h-px bg-line" />
+          {AGREEMENTS.map((item) => (
+            <Checkbox
+              key={item.id}
+              checked={!!agreed[item.id]}
+              onChange={() => toggleOne(item.id)}
+              label={item.label}
+            />
+          ))}
         </div>
 
-        <p className="mt-4 text-sm text-muted">지능지수나 진단 정보는 묻지 않아요</p>
+        <p className="mt-4 text-xs leading-[1.45] text-faint">지능지수나 진단 정보는 묻지 않아요</p>
 
-        <Button type="submit" disabled={!canSubmit} className="mt-auto">
+        <Button type="submit" disabled={!canSubmit} className="mt-auto text-base!">
           가입하기
         </Button>
       </form>
