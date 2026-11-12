@@ -88,10 +88,10 @@ export default function PracticeChat() {
       {/* 대화 영역만 스크롤 (스크롤바 숨김) */}
       <main className="flex-1 overflow-y-auto px-5 pt-3 pb-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         <div className="flex gap-1.5">
-          <Chip className="border border-primary bg-badge text-primary-ink">
+          <Chip className="border border-primary bg-chip text-primary-ink">
             연습 {session.round} / {session.totalRounds}
           </Chip>
-          <Chip className="border-[0.8px] border-hint bg-hint-soft text-hint">힌트 {hintsLeft}개 남음</Chip>
+          <Chip className="border-[0.8px] border-success bg-success-soft text-success">힌트 {hintsLeft}개 남음</Chip>
         </div>
 
         <div className="mt-4 flex flex-col gap-3">
@@ -103,7 +103,7 @@ export default function PracticeChat() {
         </div>
 
         {hintShown && (
-          <div className="relative mt-5 rounded-3xl bg-hint-soft px-5 py-3.5">
+          <div className="relative mt-5 rounded-3xl bg-success-soft px-5 py-3.5">
             {/* 피그마처럼 긴 점선 테두리 (CSS dashed는 점 간격을 못 바꿔서 SVG로 그림)
                 pathLength=960, 7+5 간격 → 정확히 80번 반복돼서 이음새 없이 고르게 끊겨요 */}
             <svg className="pointer-events-none absolute inset-0 size-full overflow-visible" aria-hidden="true">
@@ -113,13 +113,13 @@ export default function PracticeChat() {
                 rx="24"
                 style={{ width: 'calc(100% - 1px)', height: 'calc(100% - 1px)' }}
                 fill="none"
-                stroke="var(--color-hint)"
+                stroke="var(--color-success)"
                 strokeWidth="1"
                 pathLength="960"
                 strokeDasharray="7 5"
               />
             </svg>
-            <p className="text-[0.9375rem] font-bold text-hint">힌트</p>
+            <p className="text-[0.9375rem] font-bold text-success">힌트</p>
             <p className="mt-1 text-[0.9375rem]">{turn.hint}</p>
           </div>
         )}
@@ -144,7 +144,7 @@ export default function PracticeChat() {
           type="button"
           onClick={showHint}
           disabled={hintsLeft === 0 || hintShown || finished}
-          className="h-14 rounded-2xl border border-hint bg-hint-soft text-lg font-bold text-hint transition disabled:opacity-40"
+          className="h-14 rounded-2xl border border-success bg-success-soft text-lg font-bold text-success transition disabled:opacity-40"
         >
           힌트 사용하기💡
         </button>
