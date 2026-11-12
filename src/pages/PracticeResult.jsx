@@ -47,7 +47,7 @@ export default function PracticeResult() {
                 {foundClues.map((clue) => (
                   <li
                     key={clue}
-                    className="rounded-full border border-hint bg-mint-soft px-3 py-1.5 text-sm text-hint"
+                    className="rounded-full border border-success bg-mint-soft px-3 py-1.5 text-sm text-success"
                   >
                     {clue}
                   </li>
