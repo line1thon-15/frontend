@@ -4,6 +4,7 @@ import Start from './pages/Start.jsx'
 import ChildLogin from './pages/ChildLogin.jsx'
 import FirstSetup from './pages/FirstSetup.jsx'
 import ChildHome from './pages/ChildHome.jsx'
+import GuardianSummary from './pages/GuardianSummary.jsx'
 import ChildGrowth from './pages/ChildGrowth.jsx'
 import GuardianSignup from './pages/GuardianSignup.jsx'
 import ComponentPreview from './pages/ComponentPreview.jsx'
@@ -18,6 +19,7 @@ export default function App() {
         <Route path="/child/login" element={<ChildLogin />} />
         <Route path="/child/setup" element={<FirstSetup />} />
         <Route path="/home" element={<ChildHome />} />
+        <Route path="/guardian/summary" element={<GuardianSummary />} />
         <Route path="/child/growth" element={<ChildGrowth />} />
         <Route path="/guardian/signup" element={<GuardianSignup />} />
         <Route path="/preview" element={<ComponentPreview />} />
