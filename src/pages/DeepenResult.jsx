@@ -25,7 +25,7 @@ export default function DeepenResult() {
       <main className="flex flex-1 flex-col gap-3 px-5 pt-3">
         <section className="flex flex-col gap-1 rounded-[1.125rem] border-2 border-success bg-success-soft p-4">
           <h2 className="text-xl leading-[1.45] font-bold text-success">{title}</h2>
-          <p className="text-sm leading-[1.45]">내가 한 말: “{myAnswer}”</p>
+          <p className="text-sm leading-[1.45] break-keep">내가 한 말: “{myAnswer}”</p>
         </section>
 
         <section className="flex flex-col gap-2 rounded-[1.125rem] bg-surface-soft p-4">
