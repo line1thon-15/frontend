@@ -37,40 +37,44 @@ export default function ChildConnectDone() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col bg-surface text-ink">
+    <div className="flex min-h-screen flex-col bg-page text-ink">
       <StatusBar />
       <Header title="아이 등록" />
 
-      <div className="flex flex-1 flex-col px-5 pb-4">
-        <h2 className="mt-4 text-xl leading-snug font-bold">
+      <div className="flex flex-1 flex-col gap-4 px-5 pt-2.5">
+        <h2 className="text-[1.375rem] leading-[1.45] font-bold">
           연결이 완료됐어요!
           <br />
           아이에게 코드를 알려 주세요
         </h2>
 
-        <span className="mt-4 self-start rounded-full bg-primary px-3 py-1 text-sm font-bold">
+        <span className="self-start rounded-full bg-primary px-3 py-1.5 text-[0.8125rem] leading-[1.45] font-medium">
           {nickname} · {grade}
         </span>
 
-        <div className="mt-5 rounded-3xl bg-surface-soft px-5 py-6 text-center">
-          <p className="text-sm text-muted">아이 로그인 코드</p>
-          <p className="my-2 text-3xl font-bold tracking-wide">{loginCode}</p>
-          <p className="text-sm text-muted">아이 기기에서 이 코드와 PIN으로 로그인해요</p>
+        <div className="flex flex-col gap-1 rounded-[1.125rem] bg-surface-soft p-4 text-center text-[0.8125rem] leading-[1.45] text-subtle">
+          <p>아이 로그인 코드</p>
+          <p className="text-[1.75rem] font-bold text-ink">{loginCode}</p>
+          <p>아이 기기에서 이 코드와 PIN으로 로그인해요</p>
         </div>
 
-        <p className="mt-4 text-sm text-muted">
-          코드를 잊어버리면 설정의 '코드·PIN 재설정'에서 새로 만들 수 있어요.
-        </p>
-
-        <div className="mt-auto flex flex-col gap-3 pt-6">
-          <Button onClick={handleShare}>코드 공유하기</Button>
-          <Button variant="outline" onClick={handleSummary}>
-            성장 요약 보기
-          </Button>
-          <p role="status" className="h-5 text-center text-sm text-muted">
+        <div>
+          <p className="text-xs leading-[1.45] text-faint">
+            코드를 잊어버리면 설정의 ‘코드·PIN 재설정’에서 새로 만들 수 있어요.
+          </p>
+          <p role="status" className="text-xs leading-[1.45] text-faint">
             {shareMessage}
           </p>
         </div>
+      </div>
+
+      <div className="flex flex-col gap-2.5 px-5 py-2">
+        <Button onClick={handleShare} className="text-base!">
+          코드 공유하기
+        </Button>
+        <Button variant="outline" onClick={handleSummary} className="text-base!">
+          성장 요약 보기
+        </Button>
       </div>
 
       <HomeIndicator />
