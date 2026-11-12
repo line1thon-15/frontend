@@ -6,9 +6,17 @@ import HomeIndicator from '../components/common/HomeIndicator.jsx'
 import chatIcon from '../assets/icons/chat.svg'
 import recordIcon from '../assets/icons/record.svg'
 import { getHome } from '../api/me.js'
+import { getMe } from '../api/auth.js'
 import { AREA_LABEL } from '../api/areas.js'
 import { toMessage } from '../api/errors.js'
 import { useLoad } from '../api/useLoad.js'
+
+// 받침이 있으면 '아', 없으면 '야' (하늘 → 하늘아, 강아지 → 강아지야)
+function greetName(name) {
+  const code = name.charCodeAt(name.length - 1) - 0xac00
+  const hasBatchim = code >= 0 && code <= 11171 && code % 28 !== 0
+  return `${name}${hasBatchim ? '아' : '야'}`
+}
 
 function MenuCard({ icon, iconBg, title, description, onClick, children }) {
   return (
@@ -30,6 +38,8 @@ function MenuCard({ icon, iconBg, title, description, onClick, children }) {
 export default function ChildHome() {
   const navigate = useNavigate()
   const { status, data, error, reload } = useLoad(getHome)
+  // 별명은 /auth/me에서 받아요. 실패해도 홈은 보여야 해서 인사말만 줄여요.
+  const { data: me } = useLoad(getMe)
   const areas = data?.areas ?? []
   const badgeCount = data?.badges.length ?? 0
 
@@ -39,8 +49,7 @@ export default function ChildHome() {
 
       <main className="flex flex-1 flex-col px-5 pt-5">
         <div className="flex items-center justify-between">
-          {/* TODO: /me/home 응답에 별명이 없어 인사만 보여 줘요 — 백엔드에 별명 추가 요청 필요 */}
-          <h1 className="text-[1.375rem] font-bold">반가워!</h1>
+          <h1 className="text-[1.375rem] font-bold">{me?.nickname ? `${greetName(me.nickname)}, 반가워!` : '반가워!'}</h1>
           <button
             type="button"
             onClick={() => navigate('/child/setup')}
