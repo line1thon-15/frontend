@@ -4,6 +4,7 @@ import Start from './pages/Start.jsx'
 import ChildLogin from './pages/ChildLogin.jsx'
 import FirstSetup from './pages/FirstSetup.jsx'
 import ChildHome from './pages/ChildHome.jsx'
+import DeepenPractice from './pages/DeepenPractice.jsx'
 import DeepenIntro from './pages/DeepenIntro.jsx'
 import CodePinReset from './pages/CodePinReset.jsx'
 import GuardianSummary from './pages/GuardianSummary.jsx'
@@ -21,6 +22,8 @@ export default function App() {
         <Route path="/child/login" element={<ChildLogin />} />
         <Route path="/child/setup" element={<FirstSetup />} />
         <Route path="/home" element={<ChildHome />} />
+        <Route path="/child/deepen/write" element={<DeepenPractice initialMode="write" />} />
+        <Route path="/child/deepen/speak" element={<DeepenPractice initialMode="speak" />} />
         <Route path="/child/deepen" element={<DeepenIntro />} />
         <Route path="/guardian/reset" element={<CodePinReset />} />
         <Route path="/guardian/summary" element={<GuardianSummary />} />
