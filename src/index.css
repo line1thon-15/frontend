@@ -47,4 +47,5 @@
   --color-success-soft: #f1fff9;     /* 초록 칩·힌트 버튼·결과 박스 배경 */
   /* Figma 명세 추가 색 */
   --color-faint: #9c8a66;            /* 가장 연한 안내 문구 */
+  --color-mood: #ffd43b;             /* 감정 온도계 채워진 막대 */
 }
