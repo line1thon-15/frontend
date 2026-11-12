@@ -15,11 +15,10 @@ npm install
 npm run dev
 ```
 
-백엔드 서버 주소는 루트에 `.env` 파일을 만들어 넣습니다. (`.env`는 커밋하지 않습니다)
+백엔드 API는 `/api/v1/...` 경로로 호출합니다. 로컬에서는 `vite.config.js`의 프록시가 `/api` 요청을 `http://localhost:8080`으로 넘기고, 배포(Vercel)에서는 `vercel.json`의 리라이트가 백엔드로 넘깁니다.
 
-```
-VITE_API_URL=http://localhost:8080
-```
+`VITE_API_URL`은 **비워 둡니다.** (`.env`를 만들지 않아도 됩니다)
+서버 주소를 `http://localhost:8080`처럼 절대 주소로 넣으면 요청이 다른 출처가 되어 쿠키가 전송되지 않고, 로그인이 유지되지 않습니다.
 
 ## 폴더 구조
 
