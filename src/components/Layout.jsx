@@ -2,7 +2,7 @@
 export default function Layout({ children }) {
   return (
     <div className="min-h-screen bg-neutral-100">
-      <main className="mx-auto min-h-screen w-full max-w-[390px] bg-surface text-ink">
+      <main className="mx-auto min-h-screen w-full max-w-[390px] bg-page">
         {children}
       </main>
     </div>
