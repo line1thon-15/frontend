@@ -4,6 +4,7 @@ import Start from './pages/Start.jsx'
 import ChildLogin from './pages/ChildLogin.jsx'
 import FirstSetup from './pages/FirstSetup.jsx'
 import ChildHome from './pages/ChildHome.jsx'
+import NextStep from './pages/NextStep.jsx'
 import DeepenResult from './pages/DeepenResult.jsx'
 import DeepenPractice from './pages/DeepenPractice.jsx'
 import DeepenIntro from './pages/DeepenIntro.jsx'
@@ -23,6 +24,7 @@ export default function App() {
         <Route path="/child/login" element={<ChildLogin />} />
         <Route path="/child/setup" element={<FirstSetup />} />
         <Route path="/home" element={<ChildHome />} />
+        <Route path="/child/next" element={<NextStep />} />
         <Route path="/child/deepen/result" element={<DeepenResult />} />
         <Route path="/child/deepen/write" element={<DeepenPractice initialMode="write" />} />
         <Route path="/child/deepen/speak" element={<DeepenPractice initialMode="speak" />} />
