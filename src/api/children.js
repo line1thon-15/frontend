@@ -8,6 +8,10 @@ const GRADE_CODE = {
   고등학생: 'H2',
 }
 
+// 서버 학년 코드 → 화면에 보여 줄 말 (E=초등, M=중학, H=고등)
+export const gradeLabel = (code) =>
+  ({ E: '초등 고학년', M: '중학생', H: '고등학생' })[code?.[0]] ?? ''
+
 // TODO: 동의 문서 버전 — 백엔드와 값 확인 필요 (G1에서 필수 동의를 받은 뒤라 consent_agreed는 true)
 const CONSENT_VERSION = 'v1'
 

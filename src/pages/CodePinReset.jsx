@@ -1,18 +1,11 @@
 // G4 코드·PIN 재설정 (보호자)
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import StatusBar from '../components/common/StatusBar.jsx'
 import Header from '../components/common/Header.jsx'
 import Button from '../components/common/Button.jsx'
 import HomeIndicator from '../components/common/HomeIndicator.jsx'
-
-// TODO: 백엔드 연동 후 아이 정보·현재 코드를 API에서 받아오기
-const MOCK = {
-  nickname: '하늘이',
-  grade: '초등 고학년',
-  oldCode: 'ABC-1234',
-  // 재설정 API 응답으로 받을 새 코드 (지금은 임시값)
-  newCode: 'XKP-5821',
-}
+import { gradeLabel, listChildren, reissueLinkCode, resetChildPin } from '../api/children.js'
+import { toMessage } from '../api/errors.js'
 
 const PIN_LENGTH = 4
 
@@ -57,20 +50,52 @@ function PinField({ label, value, onChange }) {
 }
 
 export default function CodePinReset() {
-  const { nickname, grade, oldCode, newCode } = MOCK
+  // MVP는 아이 한 명만 다뤄요. 목록의 첫 번째 아이를 재설정 대상으로 써요.
+  const [child, setChild] = useState(null)
+  const [newCode, setNewCode] = useState('')
+  const [loadError, setLoadError] = useState('')
+  const [error, setError] = useState('')
+  const [submitting, setSubmitting] = useState(false)
   const [pin, setPin] = useState('')
   const [pinConfirm, setPinConfirm] = useState('')
   const [done, setDone] = useState(false)
   const [message, setMessage] = useState('')
 
   const isMismatch = pinConfirm.length === PIN_LENGTH && pin !== pinConfirm
-  const canSubmit = pin.length === PIN_LENGTH && pin === pinConfirm
+  const canSubmit = child !== null && pin.length === PIN_LENGTH && pin === pinConfirm && !submitting
 
-  const handleSubmit = (e) => {
+  useEffect(() => {
+    let cancelled = false
+    listChildren()
+      .then(({ children }) => {
+        if (cancelled) return
+        if (children.length === 0) setLoadError('등록된 아이가 없어요. 먼저 아이를 등록해 주세요.')
+        else setChild(children[0])
+      })
+      .catch((err) => {
+        if (!cancelled) setLoadError(toMessage(err, { UNAUTHENTICATED: '로그인이 필요해요.' }))
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
+  const handleSubmit = async (e) => {
     e.preventDefault()
     if (!canSubmit || done) return
-    // TODO: 백엔드 코드·PIN 재설정 API 연동 — 성공했을 때만 완료 상태로 바꾸고, 응답의 새 코드를 쓰기
-    setDone(true)
+    setSubmitting(true)
+    setError('')
+    try {
+      // PIN을 바꾸고 → 새 코드를 받아요. 둘 다 성공했을 때만 완료 상태로 바꿔요.
+      await resetChildPin(child.child_id, pin)
+      const { link_code: linkCode } = await reissueLinkCode(child.child_id)
+      setNewCode(linkCode)
+      setDone(true)
+    } catch (err) {
+      setError(toMessage(err, { CHILD_NOT_FOUND: '아이 정보를 찾을 수 없어요.' }))
+    } finally {
+      setSubmitting(false)
+    }
   }
 
   const handleShare = async () => {
@@ -100,7 +125,7 @@ export default function CodePinReset() {
         </h2>
 
         <span className="mt-4 self-start rounded-full bg-primary px-3 py-1.5 text-[0.8125rem] leading-[1.45] font-medium">
-          {nickname} · {grade}
+          {child ? `${child.nickname} · ${gradeLabel(child.grade)}` : ' '}
         </span>
 
         <p className="mt-4 mb-1.5 text-sm leading-[1.45] font-medium text-muted">로그인 코드</p>
@@ -109,12 +134,13 @@ export default function CodePinReset() {
             <>
               <p className="text-[0.8125rem] leading-[1.45] text-muted">새 로그인 코드</p>
               <p className="text-[1.75rem] leading-[1.45] font-bold">{newCode}</p>
-              <p className="text-[0.8125rem] leading-[1.45] text-muted">이전 코드 {oldCode}는 이제 쓸 수 없어요</p>
+              <p className="text-[0.8125rem] leading-[1.45] text-muted">이전 코드는 이제 쓸 수 없어요</p>
             </>
           ) : (
             <>
+              {/* TODO: 목록 API가 현재 코드를 주지 않아 가려 둠 — 백엔드와 확인 */}
               <p className="text-[0.8125rem] leading-[1.45] text-muted">현재 로그인 코드</p>
-              <p className="text-[1.75rem] leading-[1.45] font-bold">{oldCode}</p>
+              <p className="text-[1.75rem] leading-[1.45] font-bold">● ● ● ● ● ●</p>
               <p className="text-[0.8125rem] leading-[1.45] text-muted">새 PIN을 정하면 새 로그인 코드가 만들어져요</p>
             </>
           )}
@@ -126,6 +152,12 @@ export default function CodePinReset() {
             <PinField label="새 PIN 한 번 더" value={pinConfirm} onChange={setPinConfirm} />
             {isMismatch && <p className="-mt-2 text-[0.8125rem] leading-[1.45] text-rose-600">PIN이 서로 달라요. 다시 확인해 주세요.</p>}
           </div>
+        )}
+
+        {(loadError || error) && (
+          <p role="alert" className="mt-3 text-[0.8125rem] leading-[1.45] text-rose-600">
+            {loadError || error}
+          </p>
         )}
 
         <ul className="mt-4 flex flex-col gap-1 rounded-[1.125rem] border border-success bg-success-soft px-4 py-3 text-[0.8125rem] leading-[1.45] text-success">
