@@ -33,4 +33,12 @@
   --color-mint-soft: #ddf5e8;        /* 연한 민트 (홈 성장 기록 아이콘 배경) */
   --color-progress: #fff5d6;         /* 영역별 진행 칩 배경 */
   --color-subtle: #7a6a4c;           /* 카드 설명 글자 */
+
+  /* Figma 명세 추가 색 */
+  --color-chip: #ffe79a;
+  --color-clue-soft: #fff1c2;
+  --color-clue-ink: #8a6100;
+  --color-success: #008556;
+  --color-success-soft: #f1fff9;
+  --color-faint: #9c8a66;
 }
