@@ -26,8 +26,12 @@ function formatTime(iso) {
   return `${d.getMonth() + 1}/${d.getDate()} (${day}) ${h < 12 ? '오전' : '오후'} ${h % 12 || 12}:${pad(d.getMinutes())}`
 }
 
-// 비율 값(0~1)을 %로. TODO: 서버가 0~1로 주는지 0~100으로 주는지 확인 필요
-const toPercent = (v) => (v == null ? '–' : `${Math.round(v <= 1 ? v * 100 : v)}%`)
+// 서버 지표는 비율(0~1)이에요. %로 보여 줘요. (백엔드 확인: ahead_of_ai_ratio는 0~1)
+// TODO: missed_ratio·first_seen_accuracy도 0~1인지 백엔드에 확인
+const toPercent = (v) => (v == null ? '–' : `${Math.round(v * 100)}%`)
+
+// 서버 라벨 '먼저 알아챈 횟수'는 비율(%)과 안 맞아서, 화면에서는 피그마 문구로 보여 줘요.
+const METRIC_LABEL = { ahead_of_ai_ratio: '먼저 판단' }
 
 // 받침이 있는 이름 뒤에는 '이'를 붙여요 (하늘 → 하늘이, 강아지 → 강아지)
 function callName(name) {
@@ -139,7 +143,6 @@ export default function GuardianSummary() {
   // 추이를 그릴 수 있는(점 2개 이상) 지표만 탭으로 보여 줘요
   const chartMetrics = metrics.filter((m) => m.status === 'ok' && m.trend.length >= 2)
   const activeMetric = chartMetrics.find((m) => m.metric_id === selected) ?? chartMetrics[0]
-  const scale = activeMetric && activeMetric.trend.every((p) => p.value <= 1) ? 100 : 1
 
   return (
     <div className="flex min-h-screen flex-col bg-page text-ink">
@@ -186,7 +189,7 @@ export default function GuardianSummary() {
                       activeMetric.metric_id === m.metric_id ? 'border border-primary-ink bg-chip' : 'bg-surface-soft'
                     }`}
                   >
-                    {m.label}
+                    {METRIC_LABEL[m.metric_id] ?? m.label}
                   </button>
                 ))}
               </div>
@@ -195,7 +198,7 @@ export default function GuardianSummary() {
                   const d = new Date(p.date)
                   return `${d.getMonth() + 1}/${d.getDate()}`
                 })}
-                values={activeMetric.trend.map((p) => p.value * scale)}
+                values={activeMetric.trend.map((p) => p.value * 100)}
               />
             </>
           ) : (
