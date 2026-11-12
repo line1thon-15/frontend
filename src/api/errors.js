@@ -5,6 +5,8 @@ import { ApiError } from './client.js'
 export function toMessage(err, byCode = {}) {
   if (err instanceof ApiError) {
     if (err.code && byCode[err.code]) return byCode[err.code]
+    if (err.status === 401) return '로그인이 필요해요. 다시 로그인해 주세요.'
+    if (err.status === 403) return '이 화면은 볼 수 없어요.'
     if (err.status >= 500) return '잠시 문제가 생겼어요. 조금 뒤에 다시 해 주세요.'
     return '요청을 처리하지 못했어요. 입력한 내용을 확인해 주세요.'
   }

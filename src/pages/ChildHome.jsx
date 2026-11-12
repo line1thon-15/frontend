@@ -5,17 +5,10 @@ import Button from '../components/common/Button.jsx'
 import HomeIndicator from '../components/common/HomeIndicator.jsx'
 import chatIcon from '../assets/icons/chat.svg'
 import recordIcon from '../assets/icons/record.svg'
-
-// TODO: 백엔드 연동 후 아이 별명·영역별 진행률·배지 수를 API에서 받아오기
-const MOCK = {
-  nickname: '하늘',
-  badgeCount: 3,
-  areas: [
-    { id: 'fraud', label: '게임 아이템·용돈 사기', progress: 70 },
-    { id: 'personal-info', label: '사진·만남·개인정보 요구', progress: 12 },
-    { id: 'friend-request', label: '친구의 무리한 부탁', progress: 40 },
-  ],
-}
+import { getHome } from '../api/me.js'
+import { AREA_LABEL } from '../api/areas.js'
+import { toMessage } from '../api/errors.js'
+import { useLoad } from '../api/useLoad.js'
 
 function MenuCard({ icon, iconBg, title, description, onClick, children }) {
   return (
@@ -36,7 +29,9 @@ function MenuCard({ icon, iconBg, title, description, onClick, children }) {
 
 export default function ChildHome() {
   const navigate = useNavigate()
-  const { nickname, badgeCount, areas } = MOCK
+  const { status, data, error, reload } = useLoad(getHome)
+  const areas = data?.areas ?? []
+  const badgeCount = data?.badges.length ?? 0
 
   return (
     <div className="flex min-h-screen flex-col bg-page text-ink">
@@ -44,7 +39,8 @@ export default function ChildHome() {
 
       <main className="flex flex-1 flex-col px-5 pt-5">
         <div className="flex items-center justify-between">
-          <h1 className="text-[1.375rem] font-bold">{nickname}아, 반가워!</h1>
+          {/* TODO: /me/home 응답에 별명이 없어 인사만 보여 줘요 — 백엔드에 별명 추가 요청 필요 */}
+          <h1 className="text-[1.375rem] font-bold">반가워!</h1>
           <button
             type="button"
             onClick={() => navigate('/child/setup')}
@@ -55,6 +51,15 @@ export default function ChildHome() {
         </div>
         <p className="mt-2 text-sm text-subtle">오늘은 무엇을 해 볼까요?</p>
 
+        {status === 'error' && (
+          <p role="alert" className="mt-3 text-sm text-[#b4234a]">
+            {toMessage(error)}{' '}
+            <button type="button" onClick={reload} className="underline">
+              다시 시도
+            </button>
+          </p>
+        )}
+
         <div className="mt-4 flex flex-col gap-4">
           <MenuCard
             icon={chatIcon}
@@ -64,16 +69,16 @@ export default function ChildHome() {
           >
             {/* 영역을 고르면 연습 시작 (Y4-1 감정 온도계 → Y4 연습 대화) */}
             <ul className="flex flex-col gap-2.5">
-              {areas.map((area) => (
-                <li key={area.id}>
+              {areas.map(({ area }) => (
+                <li key={area}>
                   <button
                     type="button"
-                    // TODO: 연습 화면 경로 확정되면 수정
-                    onClick={() => navigate(`/practice/${area.id}`)}
+                    // TODO: 연습 화면 경로는 프론트 A(연습 화면)와 맞춰야 해요. 지금은 서버 영역 값을 그대로 넘겨요.
+                    onClick={() => navigate(`/practice/${area}`)}
                     className="flex h-[1.9375rem] w-full items-center justify-between rounded-full border-[0.7px] border-primary-ink bg-progress px-3.5 text-[0.8125rem]"
                   >
-                    <span>{area.label}</span>
-                    <span>{area.progress}%</span>
+                    {/* 영역별 진행률(%)은 /me/home 응답에 없어 보여 주지 않아요 */}
+                    <span>{AREA_LABEL[area] ?? area}</span>
                   </button>
                 </li>
               ))}
@@ -96,7 +101,7 @@ export default function ChildHome() {
       </main>
 
       <div className="px-5 pt-4 pb-4">
-        {/* TODO: 믿는 사람 연락 기능(T-41, 프론트 B와 협의) */}
+        {/* TODO: 믿는 사람 연락 기능(T-41) — 응답의 trusted_contact({ name, phone } 또는 null)를 쓰면 돼요 */}
         <Button variant="outline">도움이 필요해요</Button>
       </div>
 
