@@ -29,14 +29,15 @@ export default function NextStep() {
   const target = OPTIONS.find((option) => option.id === selected)
 
   return (
-    <div className="flex min-h-screen flex-col bg-surface text-ink">
+    <div className="flex min-h-screen flex-col bg-page text-ink">
       <StatusBar />
       <Header title="다음 단계" />
 
       <main className="flex flex-1 flex-col px-5 pt-3">
-        <h2 className="text-[1.375rem] font-bold">이제 무엇을 해 볼까요?</h2>
+        <h2 className="text-[1.375rem] leading-[1.45] font-bold">이제 무엇을 해 볼까요?</h2>
 
-        <div role="radiogroup" aria-label="다음 단계" className="mt-3 flex flex-col gap-3">
+        <div className="mt-3 flex flex-col gap-3">
+          <div role="radiogroup" aria-label="다음 단계" className="flex flex-col gap-3">
           {OPTIONS.map((option) => {
             const isSelected = selected === option.id
             const description =
@@ -48,36 +49,38 @@ export default function NextStep() {
                 role="radio"
                 aria-checked={isSelected}
                 onClick={() => setSelected(option.id)}
-                className={`rounded-2xl px-4 py-3.5 text-left transition-colors ${
-                  isSelected ? 'border-2 border-primary-strong bg-surface-selected' : 'border border-line bg-white'
+                className={`flex flex-col gap-1 rounded-[1.125rem] p-4 text-left transition-colors ${
+                  isSelected ? 'border-2 border-primary-strong bg-chip' : 'border border-line bg-white'
                 }`}
               >
-                <span className="block text-base font-bold">{option.title}</span>
-                <span className="mt-1 block text-sm text-muted">{description}</span>
+                <span className="block text-[1.0625rem] leading-[1.45] font-bold">{option.title}</span>
+                <span className="block text-sm leading-[1.45] text-subtle">{description}</span>
               </button>
             )
           })}
-        </div>
+          </div>
 
-        <section className="mt-4 rounded-2xl border border-rose-400 bg-rose-50/50 p-4">
-          <h3 className="text-sm font-bold">보호자에게 알려지는 것</h3>
-          <ul className="mt-2 flex flex-col gap-1 text-xs">
-            <li>· 심화 연습을 했다는 사실과 횟수</li>
-            <li>· 내가 쓴 답, 녹음, 기분은 보내지 않아요</li>
-          </ul>
-        </section>
+          <section className="flex flex-col gap-1 rounded-[1.125rem] border border-[#ef4a67] bg-[#fff9fb] p-4">
+            <h3 className="text-sm leading-[1.45] font-bold">보호자에게 알려지는 것</h3>
+            <ul className="flex flex-col gap-1 text-[0.8125rem] leading-[1.45]">
+              <li>· 심화 연습을 했다는 사실과 횟수</li>
+              <li>· 내가 쓴 답, 녹음, 기분은 보내지 않아요</li>
+            </ul>
+          </section>
+        </div>
       </main>
 
       <div className="flex flex-col gap-3 px-5 pt-6 pb-4">
         {/* 선택 전에는 테두리 버튼, 선택하면 채워진 버튼으로 바뀌어요 */}
         <Button
           variant={target ? 'primary' : 'outline'}
+          className={target ? 'text-base!' : 'border-2! border-primary! text-base! text-ink!'}
           aria-disabled={!target}
           onClick={() => target && navigate(target.to)}
         >
           다음으로
         </Button>
-        <Button variant="soft" onClick={() => navigate('/home')}>
+        <Button variant="soft" className="text-base!" onClick={() => navigate('/home')}>
           홈으로
         </Button>
       </div>
