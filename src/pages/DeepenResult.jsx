@@ -18,23 +18,23 @@ export default function DeepenResult() {
   const { title, myAnswer, clues, tips } = MOCK
 
   return (
-    <div className="flex min-h-screen flex-col bg-surface text-ink">
+    <div className="flex min-h-screen flex-col bg-page text-ink">
       <StatusBar />
       <Header title="심화 연습 결과" />
 
       <main className="flex flex-1 flex-col gap-3 px-5 pt-3">
-        <section className="rounded-2xl border-2 border-emerald-700/70 bg-mint-soft p-4">
-          <h2 className="text-xl font-bold text-emerald-700">{title}</h2>
-          <p className="mt-2 text-sm leading-relaxed">내가 한 말: “{myAnswer}”</p>
+        <section className="flex flex-col gap-1 rounded-[1.125rem] border-2 border-success bg-success-soft p-4">
+          <h2 className="text-xl leading-[1.45] font-bold text-success">{title}</h2>
+          <p className="text-sm leading-[1.45]">내가 한 말: “{myAnswer}”</p>
         </section>
 
-        <section className="rounded-2xl bg-surface-soft p-4">
-          <h2 className="text-sm font-bold text-muted">내가 알아챈 단서</h2>
-          <ul className="mt-3 flex flex-wrap gap-2">
+        <section className="flex flex-col gap-2 rounded-[1.125rem] bg-surface-soft p-4">
+          <h2 className="text-sm leading-[1.45] font-bold text-muted">내가 알아챈 단서</h2>
+          <ul className="flex flex-wrap gap-1.5">
             {clues.map((clue) => (
               <li
                 key={clue}
-                className="rounded-full border border-rose-400 bg-rose-50 px-3 py-1 text-sm text-rose-700"
+                className="rounded-full border-[0.7px] border-[#ef4a67] bg-[#ffeef3] px-3 py-1.5 text-[0.8125rem] leading-[1.45] font-medium text-[#b4234a]"
               >
                 {clue}
               </li>
@@ -42,9 +42,9 @@ export default function DeepenResult() {
           </ul>
         </section>
 
-        <section className="rounded-2xl border border-line bg-white p-4">
-          <h2 className="text-sm font-bold text-muted">이렇게 하면 더 좋아요</h2>
-          <ol className="mt-3 flex flex-col gap-2 text-sm">
+        <section className="flex flex-col gap-2 rounded-[1.125rem] border border-line bg-white p-4">
+          <h2 className="text-sm leading-[1.45] font-bold text-muted">이렇게 하면 더 좋아요</h2>
+          <ol className="flex flex-col text-[0.9375rem] leading-[1.45]">
             {tips.map((tip, i) => (
               <li key={tip}>
                 {i + 1}. {tip}
@@ -53,7 +53,7 @@ export default function DeepenResult() {
           </ol>
         </section>
 
-        <p className="text-xs leading-relaxed text-subtle">
+        <p className="text-xs leading-[1.45] text-faint">
           이 피드백은 참고용이에요.
           <br />
           헷갈리면 믿는 사람에게 확인해 보세요.
@@ -61,9 +61,11 @@ export default function DeepenResult() {
       </main>
 
       <div className="flex flex-col gap-3 px-5 pt-6 pb-4">
-        <Button onClick={() => navigate('/child/next')}>다음으로</Button>
+        <Button className="text-base!" onClick={() => navigate('/child/next')}>
+          다음으로
+        </Button>
         {/* TODO: 글로/말로 중 아이가 고른 방식의 심화 연습 화면으로 돌아가기 (Y7-1 / Y7-2) */}
-        <Button variant="soft" onClick={() => navigate('/child/deepen/write')}>
+        <Button variant="soft" className="text-base!" onClick={() => navigate('/child/deepen/write')}>
           내 답 다시 써 보기
         </Button>
       </div>
