@@ -12,6 +12,8 @@ import CodePinReset from './pages/CodePinReset.jsx'
 import GuardianSummary from './pages/GuardianSummary.jsx'
 import ChildGrowth from './pages/ChildGrowth.jsx'
 import GuardianSignup from './pages/GuardianSignup.jsx'
+import ChildConnect from './pages/ChildConnect.jsx'
+import ChildConnectDone from './pages/ChildConnectDone.jsx'
 import ComponentPreview from './pages/ComponentPreview.jsx'
 
 // 화면을 추가할 때 여기에 Route를 한 줄씩 추가하세요.
@@ -33,6 +35,8 @@ export default function App() {
         <Route path="/guardian/summary" element={<GuardianSummary />} />
         <Route path="/child/growth" element={<ChildGrowth />} />
         <Route path="/guardian/signup" element={<GuardianSignup />} />
+        <Route path="/guardian/connect" element={<ChildConnect />} />
+        <Route path="/guardian/connect/done" element={<ChildConnectDone />} />
         <Route path="/preview" element={<ComponentPreview />} />
       </Routes>
     </Layout>
