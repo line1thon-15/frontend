@@ -39,7 +39,7 @@ export default function ChildHome() {
   const { nickname, badgeCount, areas } = MOCK
 
   return (
-    <div className="flex min-h-screen flex-col bg-surface text-ink">
+    <div className="flex min-h-screen flex-col bg-page text-ink">
       <StatusBar />
 
       <main className="flex flex-1 flex-col px-5 pt-5">
