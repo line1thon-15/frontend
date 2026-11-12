@@ -16,6 +16,7 @@ import ChildConnect from './pages/ChildConnect.jsx'
 import ChildConnectDone from './pages/ChildConnectDone.jsx'
 import EmotionCheck from './pages/EmotionCheck.jsx'
 import PracticeChat from './pages/PracticeChat.jsx'
+import PracticeResult from './pages/PracticeResult.jsx'
 import ComponentPreview from './pages/ComponentPreview.jsx'
 
 // 화면을 추가할 때 여기에 Route를 한 줄씩 추가하세요.
@@ -41,6 +42,7 @@ export default function App() {
         <Route path="/guardian/connect/done" element={<ChildConnectDone />} />
         <Route path="/practice/:areaId" element={<EmotionCheck />} />
         <Route path="/practice/:areaId/chat" element={<PracticeChat />} />
+        <Route path="/practice/:areaId/result" element={<PracticeResult />} />
         <Route path="/preview" element={<ComponentPreview />} />
       </Routes>
     </Layout>
