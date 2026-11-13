@@ -1,6 +1,6 @@
 // G2-1 연결 완료
 import { useState } from 'react'
-import { Navigate, useLocation } from 'react-router-dom'
+import { Navigate, useLocation, useNavigate } from 'react-router-dom'
 import StatusBar from '../components/common/StatusBar.jsx'
 import Header from '../components/common/Header.jsx'
 import Button from '../components/common/Button.jsx'
@@ -8,6 +8,7 @@ import HomeIndicator from '../components/common/HomeIndicator.jsx'
 
 export default function ChildConnectDone() {
   const { state } = useLocation()
+  const navigate = useNavigate()
   const [shareMessage, setShareMessage] = useState('')
 
   // G2에서 연결 완료를 거치지 않고 바로 들어오면 G2로 돌려보내기
@@ -31,10 +32,7 @@ export default function ChildConnectDone() {
     }
   }
 
-  const handleSummary = () => {
-    // TODO: G3 성장 요약 화면이 나오면 이동
-    console.log('G3 성장 요약으로 이동 예정')
-  }
+  const handleSummary = () => navigate('/guardian/summary')
 
   return (
     <div className="flex min-h-screen flex-col bg-page text-ink">
