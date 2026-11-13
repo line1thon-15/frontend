@@ -13,3 +13,7 @@ export const loginGuardian = ({ email, password }) =>
 // 오류: INVALID_CODE_OR_PIN(401)
 export const loginChild = ({ linkCode, pin }) =>
   api('/api/v1/auth/child/login', { method: 'POST', body: { link_code: linkCode, pin } })
+
+// 로그인한 사람 정보. 아이 세션이면 { role:'child', nickname, grade, onboarding_completed, display:{ font_scale, high_contrast, tts_enabled } }
+// 오류: 401 UNAUTHENTICATED
+export const getMe = () => api('/api/v1/auth/me')

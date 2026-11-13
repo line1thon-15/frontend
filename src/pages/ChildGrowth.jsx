@@ -4,26 +4,10 @@ import StatusBar from '../components/common/StatusBar.jsx'
 import Header from '../components/common/Header.jsx'
 import Button from '../components/common/Button.jsx'
 import HomeIndicator from '../components/common/HomeIndicator.jsx'
-
-// TODO: 백엔드 연동 후 성장 기록 API에서 받아오기
-const MOCK = {
-  summary: [
-    { label: '연습', value: 12 },
-    { label: '찾은 단서', value: 8 },
-    { label: '심화 연습', value: 4 },
-  ],
-  areas: [
-    { id: 'fraud', label: '게임 아이템·용돈 사기', progress: 70, badge: true },
-    { id: 'friend-request', label: '친구의 무리한 부탁', progress: 40, badge: false },
-    { id: 'money', label: '가게 이용·계산', progress: 20, badge: false },
-  ],
-  weakClues: ['너무 싼 가격', '친구인 척하는 말'],
-  latestAnswer: {
-    text: '비밀번호는 알려 줄 수 없어. 부모님께 먼저 물어보고 답할게',
-    method: '글로 답함',
-    result: '잘 지켰어요',
-  },
-}
+import { getGrowth } from '../api/me.js'
+import { AREA_LABEL } from '../api/areas.js'
+import { toMessage } from '../api/errors.js'
+import { useLoad } from '../api/useLoad.js'
 
 function Card({ className = '', children }) {
   return <section className={`rounded-[1.125rem] p-4 ${className}`}>{children}</section>
@@ -31,7 +15,16 @@ function Card({ className = '', children }) {
 
 export default function ChildGrowth() {
   const navigate = useNavigate()
-  const { summary, areas, weakClues, latestAnswer } = MOCK
+  const { status, data, error, reload } = useLoad(getGrowth)
+
+  const areas = data?.areas ?? []
+  const weakClues = data?.needs_practice_cues.map((cue) => cue.label) ?? []
+  // 피그마의 '찾은 단서'·'심화 연습' 숫자는 /me/growth 응답에 없어, 서버가 주는 값으로 바꿨어요.
+  const summary = [
+    { label: '연습', value: areas.reduce((sum, a) => sum + a.practice_count, 0) },
+    { label: '배지', value: areas.reduce((sum, a) => sum + a.badges.length, 0) },
+    { label: '연속 기록(일)', value: data?.streak_days ?? 0 },
+  ]
 
   return (
     <div className="flex min-h-screen flex-col bg-page text-ink">
@@ -39,6 +32,15 @@ export default function ChildGrowth() {
       <Header title="내 성장 기록" />
 
       <main className="flex flex-1 flex-col gap-3 px-5 pt-3">
+        {status === 'error' && (
+          <p role="alert" className="text-sm text-[#b4234a]">
+            {toMessage(error)}{' '}
+            <button type="button" onClick={reload} className="underline">
+              다시 시도
+            </button>
+          </p>
+        )}
+
         <ul className="grid grid-cols-3 gap-2">
           {summary.map((item) => (
             <li key={item.label} className="flex flex-col items-center gap-0.5 rounded-[1.125rem] bg-surface-soft p-4">
@@ -51,26 +53,18 @@ export default function ChildGrowth() {
         <Card className="border border-line bg-white">
           <h2 className="text-sm font-bold text-muted">영역별 연습</h2>
           <ul className="mt-2.5 flex flex-col gap-2.5">
-            {areas.map((area) => (
-              <li key={area.id}>
+            {areas.map((item) => (
+              <li key={item.area}>
                 <div className="flex items-center justify-between text-sm">
-                  <span>{area.label}</span>
-                  {area.badge && (
+                  <span>{AREA_LABEL[item.area] ?? item.area}</span>
+                  {item.badges.length > 0 && (
                     <span className="rounded-full bg-chip px-3 py-1.5 text-[0.8125rem] font-medium text-primary-ink">
                       배지
                     </span>
                   )}
                 </div>
-                <div
-                  className="mt-1.5 h-2 w-full rounded-full bg-chip"
-                  role="progressbar"
-                  aria-label={`${area.label} 진행률`}
-                  aria-valuenow={area.progress}
-                  aria-valuemin={0}
-                  aria-valuemax={100}
-                >
-                  <div className="h-full rounded-full bg-primary" style={{ width: `${area.progress}%` }} />
-                </div>
+                {/* 진행률 막대는 서버가 값을 주지 않아, 연습 횟수로 보여 줘요 */}
+                <p className="mt-1 text-[0.8125rem] text-subtle">{item.practice_count}번 연습했어요</p>
               </li>
             ))}
           </ul>
@@ -78,6 +72,9 @@ export default function ChildGrowth() {
 
         <Card className="border border-success-soft bg-surface-soft">
           <h2 className="text-sm font-bold text-muted">더 연습이 필요한 단서</h2>
+          {status === 'done' && weakClues.length === 0 && (
+            <p className="mt-2 text-[0.8125rem] text-subtle">아직 없어요</p>
+          )}
           <ul className="mt-2 flex flex-wrap gap-2">
             {weakClues.map((clue) => (
               <li
@@ -90,18 +87,7 @@ export default function ChildGrowth() {
           </ul>
         </Card>
 
-        <Card className="border border-line bg-white">
-          <h2 className="text-sm font-bold text-muted">최근 내가 직접 한 답</h2>
-          <p className="mt-2 text-[0.9375rem] leading-[1.45]">“{latestAnswer.text}”</p>
-          <div className="mt-3 flex gap-2">
-            <span className="rounded-full bg-chip px-3 py-1.5 text-[0.8125rem] font-medium text-primary-ink">
-              ✏️ {latestAnswer.method}
-            </span>
-            <span className="rounded-full border border-success bg-success-soft px-3 py-1.5 text-[0.8125rem] font-medium text-success">
-              {latestAnswer.result}
-            </span>
-          </div>
-        </Card>
+        {/* TODO: '최근 내가 직접 한 답' 카드는 서버가 주는 값이 없어 빼 뒀어요 — 백엔드와 확인 필요 */}
 
         <p className="text-xs text-faint">
           심화 연습이 더 쌓이면 내 답이 어떻게 달라졌는지 비교해 볼 수 있어요

@@ -3,31 +3,35 @@ import { useState } from 'react'
 import StatusBar from '../components/common/StatusBar.jsx'
 import Button from '../components/common/Button.jsx'
 import HomeIndicator from '../components/common/HomeIndicator.jsx'
+import { listChildren } from '../api/children.js'
+import { getReport } from '../api/report.js'
+import { AREA_LABEL } from '../api/areas.js'
+import { toMessage } from '../api/errors.js'
+import { useLoad } from '../api/useLoad.js'
 
-// TODO: 백엔드 연동 후 보호자 성장 요약 API에서 받아오기
-const MOCK = {
-  nickname: '하늘',
-  alert: {
-    time: '11/3 (화) 오후 4:12',
-    title: '확인이 필요한 메시지 결과가 있었어요',
-    description: '메시지 내용과 사진은 공유되지 않아요. 아이와 편하게 이야기해 보세요.',
-  },
-  stats: [
-    { label: '이번 주 연습', value: '12회' },
-    { label: '먼저 판단', value: '62%' },
-    { label: '약한 단서', value: '2개' },
-  ],
-  weeks: ['3주 전', '2주 전', '지난주', '이번 주'],
-  trends: {
-    missed: { label: '위험 놓침', values: [40, 32, 28, 18] },
-    doubt: { label: '정상 의심', values: [30, 26, 22, 20] },
-    first: { label: '먼저 판단', values: [34, 58, 40, 62] },
-  },
-  areas: [
-    { label: '게임 아이템·용돈 사기', progress: 80 },
-    { label: '친구의 무리한 부탁', progress: 40 },
-  ],
+// MVP는 아이 한 명이라, 목록의 첫 아이 리포트를 불러와요. 하나라도 실패하면 요약 전체를 실패로 처리해요.
+async function loadReport() {
+  const { children } = await listChildren()
+  if (children.length === 0) throw new Error('NO_CHILD')
+  return getReport(children[0].child_id)
 }
+
+const pad = (n) => String(n).padStart(2, '0')
+
+// '11/3 (화) 오후 4:12'
+function formatTime(iso) {
+  const d = new Date(iso)
+  const day = '일월화수목금토'[d.getDay()]
+  const h = d.getHours()
+  return `${d.getMonth() + 1}/${d.getDate()} (${day}) ${h < 12 ? '오전' : '오후'} ${h % 12 || 12}:${pad(d.getMinutes())}`
+}
+
+// 서버 지표는 비율(0~1)이에요. %로 보여 줘요. (백엔드 확인: ahead_of_ai_ratio는 0~1)
+// TODO: missed_ratio·first_seen_accuracy도 0~1인지 백엔드에 확인
+const toPercent = (v) => (v == null ? '–' : `${Math.round(v * 100)}%`)
+
+// 서버 라벨 '먼저 알아챈 횟수'는 비율(%)과 안 맞아서, 화면에서는 피그마 문구로 보여 줘요.
+const METRIC_LABEL = { ahead_of_ai_ratio: '먼저 판단' }
 
 // 받침이 있는 이름 뒤에는 '이'를 붙여요 (하늘 → 하늘이, 강아지 → 강아지)
 function callName(name) {
@@ -91,25 +95,74 @@ function TrendChart({ weeks, values }) {
 }
 
 export default function GuardianSummary() {
-  const { nickname, alert, stats, weeks, trends, areas } = MOCK
-  const [metric, setMetric] = useState('first')
+  const { status, data, error, reload } = useLoad(loadReport)
+  const [selected, setSelected] = useState(null)
+
+  const header = (
+    <>
+      <StatusBar />
+    </>
+  )
+
+  if (status !== 'done') {
+    return (
+      <div className="flex min-h-screen flex-col bg-page text-ink">
+        {header}
+        <main className="flex flex-1 flex-col items-center justify-center gap-3 px-5 text-center">
+          {status === 'loading' ? (
+            <p className="text-sm text-subtle">불러오는 중이에요</p>
+          ) : (
+            <>
+              <p className="text-[0.9375rem] leading-[1.45] font-bold">요약을 불러오지 못했어요</p>
+              <p role="alert" className="text-[0.8125rem] leading-[1.45] text-muted">
+                {error?.message === 'NO_CHILD' ? '등록된 아이가 없어요.' : toMessage(error)}
+              </p>
+              <Button onClick={reload} className="text-base!">
+                다시 시도
+              </Button>
+            </>
+          )}
+        </main>
+        <HomeIndicator />
+      </div>
+    )
+  }
+
+  const { child, areas, weak_cues: weakCues, notices, metrics } = data
+  const alertNotice = notices
+    .filter((n) => n.kind === 'safety')
+    .sort((x, y) => new Date(y.occurred_at) - new Date(x.occurred_at))[0]
+  const totalPractice = areas.reduce((sum, a) => sum + a.practice_count, 0)
+  const ahead = metrics.find((m) => m.metric_id === 'ahead_of_ai_ratio')
+  const stats = [
+    // 서버가 주별 횟수를 주지 않아 전체 연습 횟수로 보여 줘요
+    { label: '전체 연습', value: `${totalPractice}회` },
+    { label: '먼저 판단', value: ahead?.status === 'ok' ? toPercent(ahead.current) : '–' },
+    { label: '약한 단서', value: `${weakCues.length}개` },
+  ]
+  // 추이를 그릴 수 있는(점 2개 이상) 지표만 탭으로 보여 줘요
+  const chartMetrics = metrics.filter((m) => m.status === 'ok' && m.trend.length >= 2)
+  const activeMetric = chartMetrics.find((m) => m.metric_id === selected) ?? chartMetrics[0]
 
   return (
     <div className="flex min-h-screen flex-col bg-page text-ink">
-      <StatusBar />
+      {header}
 
       <main className="flex flex-1 flex-col gap-3 px-5 pt-3">
-        <h1 className="py-2 text-[1.0625rem] leading-[1.45] font-bold">{callName(nickname)}의 성장 요약</h1>
+        <h1 className="py-2 text-[1.0625rem] leading-[1.45] font-bold">{callName(child.nickname)}의 성장 요약</h1>
 
-        {/* TODO: 안전 알림은 메시지 분석 기능과 연결됨 — MVP 포함 여부 확인 필요 */}
-        <section className="flex flex-col gap-1.5 rounded-[1.125rem] border-2 border-alert bg-alert-soft p-4">
-          <span className="self-start rounded-full bg-alert-strong px-3 py-1.5 text-[0.8125rem] font-medium text-white">
-            안전 알림
-          </span>
-          <p className="text-xs text-subtle">{alert.time}</p>
-          <p className="text-[0.9375rem] leading-[1.45] font-bold">{alert.title}</p>
-          <p className="text-[0.8125rem] leading-[1.45] text-muted">{alert.description}</p>
-        </section>
+        {alertNotice && (
+          <section className="flex flex-col gap-1.5 rounded-[1.125rem] border-2 border-alert bg-alert-soft p-4">
+            <span className="self-start rounded-full bg-alert-strong px-3 py-1.5 text-[0.8125rem] font-medium text-white">
+              안전 알림
+            </span>
+            <p className="text-xs text-subtle">{formatTime(alertNotice.occurred_at)}</p>
+            <p className="text-[0.9375rem] leading-[1.45] font-bold">확인이 필요한 메시지 결과가 있었어요</p>
+            <p className="text-[0.8125rem] leading-[1.45] text-muted">
+              메시지 내용과 사진은 공유되지 않아요. 아이와 편하게 이야기해 보세요.
+            </p>
+          </section>
+        )}
 
         <ul className="grid grid-cols-3 gap-2">
           {stats.map((item) => (
@@ -122,33 +175,43 @@ export default function GuardianSummary() {
 
         <section className="rounded-[1.125rem] border border-line bg-white p-4">
           <h2 className="text-sm font-bold text-muted">지표 추이</h2>
-          <div className="mt-2 mb-3 flex gap-2" role="tablist">
-            {Object.entries(trends).map(([key, trend]) => (
-              <button
-                key={key}
-                type="button"
-                role="tab"
-                aria-selected={metric === key}
-                onClick={() => setMetric(key)}
-                className={`rounded-full px-3 py-1.5 text-[0.8125rem] font-medium text-primary-ink transition-colors ${
-                  metric === key
-                    ? 'border border-primary-ink bg-chip'
-                    : 'bg-surface-soft'
-                }`}
-              >
-                {trend.label}
-              </button>
-            ))}
-          </div>
-          <TrendChart weeks={weeks} values={trends[metric].values} />
+          {activeMetric ? (
+            <>
+              <div className="mt-2 mb-3 flex flex-wrap gap-2" role="tablist">
+                {chartMetrics.map((m) => (
+                  <button
+                    key={m.metric_id}
+                    type="button"
+                    role="tab"
+                    aria-selected={activeMetric.metric_id === m.metric_id}
+                    onClick={() => setSelected(m.metric_id)}
+                    className={`rounded-full px-3 py-1.5 text-[0.8125rem] font-medium text-primary-ink transition-colors ${
+                      activeMetric.metric_id === m.metric_id ? 'border border-primary-ink bg-chip' : 'bg-surface-soft'
+                    }`}
+                  >
+                    {METRIC_LABEL[m.metric_id] ?? m.label}
+                  </button>
+                ))}
+              </div>
+              <TrendChart
+                weeks={activeMetric.trend.map((p) => {
+                  const d = new Date(p.date)
+                  return `${d.getMonth() + 1}/${d.getDate()}`
+                })}
+                values={activeMetric.trend.map((p) => p.value * 100)}
+              />
+            </>
+          ) : (
+            <p className="mt-2 text-[0.8125rem] text-subtle">아직 기록이 적어요</p>
+          )}
         </section>
 
         <section className="rounded-[1.125rem] bg-surface-soft p-4">
           <h2 className="text-sm font-bold text-muted">영역별 진행</h2>
           <ul className="mt-1.5 flex flex-col gap-1.5 text-sm leading-[1.45]">
             {areas.map((area) => (
-              <li key={area.label}>
-                {area.label} · {area.progress}%
+              <li key={area.area}>
+                {AREA_LABEL[area.area] ?? area.area} · {area.practice_count}번 연습
               </li>
             ))}
           </ul>
