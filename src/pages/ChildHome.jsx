@@ -21,7 +21,12 @@ function greetName(name) {
 function MenuCard({ icon, iconBg, title, description, onClick, children }) {
   return (
     <section className="rounded-3xl border border-line bg-white p-4">
-      <button type="button" onClick={onClick} className="flex w-full items-center gap-4 text-left">
+      <button
+        type="button"
+        onClick={onClick}
+        // 눌러서 이동하는 카드만 손 모양 커서
+        className={`flex w-full items-center gap-4 text-left ${onClick ? 'cursor-pointer' : 'cursor-default'}`}
+      >
         <span className={`flex size-13 shrink-0 items-center justify-center rounded-2xl ${iconBg}`}>
           <img src={icon} alt="" className="size-8" />
         </span>
@@ -84,7 +89,7 @@ export default function ChildHome() {
                     type="button"
                     // TODO: 연습 화면 경로는 프론트 A(연습 화면)와 맞춰야 해요. 지금은 서버 영역 값을 그대로 넘겨요.
                     onClick={() => navigate(`/practice/${area}`)}
-                    className="flex h-[1.9375rem] w-full items-center justify-between rounded-full border-[0.7px] border-primary-ink bg-progress px-3.5 text-[0.8125rem]"
+                    className="flex h-[1.9375rem] w-full cursor-pointer items-center justify-between rounded-full border-[0.7px] border-primary-ink bg-progress px-3.5 text-[0.8125rem]"
                   >
                     {/* 영역별 진행률(%)은 /me/home 응답에 없어 보여 주지 않아요 */}
                     <span>{AREA_LABEL[area] ?? area}</span>
