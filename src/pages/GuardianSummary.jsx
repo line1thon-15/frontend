@@ -26,8 +26,8 @@ function formatTime(iso) {
   return `${d.getMonth() + 1}/${d.getDate()} (${day}) ${h < 12 ? '오전' : '오후'} ${h % 12 || 12}:${pad(d.getMinutes())}`
 }
 
-// 서버 지표는 비율(0~1)이에요. %로 보여 줘요. (백엔드 확인: ahead_of_ai_ratio는 0~1)
-// TODO: missed_ratio·first_seen_accuracy도 0~1인지 백엔드에 확인
+// 서버 지표 세 가지(missed_ratio·first_seen_accuracy·ahead_of_ai_ratio)는 모두 비율(0~1)이에요. %로 보여 줘요.
+// 참고: missed_ratio(놓친 비율)만 낮을수록 좋아요. 증감 화살표나 색을 쓰게 되면 이것만 방향이 반대예요.
 const toPercent = (v) => (v == null ? '–' : `${Math.round(v * 100)}%`)
 
 // 서버 라벨 '먼저 알아챈 횟수'는 비율(%)과 안 맞아서, 화면에서는 피그마 문구로 보여 줘요.
@@ -137,7 +137,8 @@ export default function GuardianSummary() {
   const stats = [
     // 서버가 주별 횟수를 주지 않아 전체 연습 횟수로 보여 줘요
     { label: '전체 연습', value: `${totalPractice}회` },
-    { label: '먼저 판단', value: ahead?.status === 'ok' ? toPercent(ahead.current) : '–' },
+    // 기록이 부족하면(status: insufficient, current는 null) '비교 불가'로 보여 줘요.
+    { label: '먼저 판단', value: ahead?.status === 'ok' ? toPercent(ahead.current) : '비교 불가' },
     { label: '약한 단서', value: `${weakCues.length}개` },
   ]
   // 추이를 그릴 수 있는(점 2개 이상) 지표만 탭으로 보여 줘요
@@ -202,7 +203,7 @@ export default function GuardianSummary() {
               />
             </>
           ) : (
-            <p className="mt-2 text-[0.8125rem] text-subtle">아직 기록이 적어요</p>
+            <p className="mt-2 text-[0.8125rem] text-subtle">비교 불가 · 아직 기록이 적어요</p>
           )}
         </section>
 

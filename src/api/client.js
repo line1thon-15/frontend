@@ -34,5 +34,10 @@ export async function api(path, options = {}) {
     const error = data?.error
     throw new ApiError(res.status, error?.code ?? null, error?.message ?? `API ${res.status}: ${path}`)
   }
+  // 성공인데 JSON이 아니면(예: /api 요청이 시작 화면 HTML로 돌아온 경우) 실패로 처리해요.
+  // 이걸 막지 않으면 화면이 조용히 비어 보이거나 가짜 성공으로 넘어가요.
+  if (data === null) {
+    throw new ApiError(res.status, 'INVALID_RESPONSE', `API 응답이 올바르지 않아요: ${path}`)
+  }
   return data
 }
