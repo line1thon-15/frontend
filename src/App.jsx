@@ -41,8 +41,8 @@ export default function App() {
         <Route path="/guardian/connect" element={<ChildConnect />} />
         <Route path="/guardian/connect/done" element={<ChildConnectDone />} />
         <Route path="/practice/:areaId" element={<EmotionCheck />} />
-        <Route path="/practice/:areaId/chat" element={<PracticeChat />} />
-        <Route path="/practice/:areaId/result" element={<PracticeResult />} />
+        <Route path="/practice/:areaId/chat/:sessionId" element={<PracticeChat />} />
+        <Route path="/practice/:areaId/result/:sessionId" element={<PracticeResult />} />
         <Route path="/preview" element={<ComponentPreview />} />
       </Routes>
     </Layout>

@@ -1,12 +1,14 @@
 // Y4-1 감정 온도계
 // 연습 시작 전에 지금 기분을 골라요. 고른 기분은 서버로 보내지 않고 저장하지도 않아요.
 import { useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import StatusBar from '../components/common/StatusBar.jsx'
 import Header from '../components/common/Header.jsx'
 import Choice from '../components/common/Choice.jsx'
 import Button from '../components/common/Button.jsx'
 import HomeIndicator from '../components/common/HomeIndicator.jsx'
+import { startPractice, startRetry } from '../api/practice.js'
+import { toMessage } from '../api/errors.js'
 
 // level: 막대가 채워지는 개수 (5 = 아주 좋아)
 const MOODS = [
@@ -23,7 +25,31 @@ const BAR_HEIGHTS = ['h-6', 'h-8', 'h-10', 'h-14', 'h-[4.375rem]']
 export default function EmotionCheck() {
   const navigate = useNavigate()
   const { areaId } = useParams()
+  // 결과 화면의 '다시 연습하기'로 오면 ?retry=이전세션id 가 붙어요
+  const [searchParams] = useSearchParams()
+  const retryOf = searchParams.get('retry')
   const [level, setLevel] = useState(3)
+  const [starting, setStarting] = useState(false)
+  const [error, setError] = useState('')
+
+  // 연습 시작 (고른 기분은 보내지 않아요)
+  const handleStart = async () => {
+    if (starting) return
+    setStarting(true)
+    setError('')
+    try {
+      const session = retryOf ? await startRetry(retryOf) : await startPractice(areaId)
+      // 받은 세션을 넘겨서 대화 화면이 다시 부르지 않게 해요
+      navigate(`/practice/${session.area}/chat/${session.session_id}`, { state: { session } })
+    } catch (err) {
+      setError(
+        toMessage(err, {
+          NO_SCENARIO_AVAILABLE: '지금은 이 연습을 할 수 없어요. 다른 연습을 골라 볼까요?',
+        }),
+      )
+      setStarting(false)
+    }
+  }
 
   const mood = MOODS.find((m) => m.level === level)
   const showRestTip = level <= 3
@@ -79,7 +105,14 @@ export default function EmotionCheck() {
         </main>
 
         <div className="flex flex-col gap-2.5 px-5 pt-5 pb-4">
-          <Button onClick={() => navigate(`/practice/${areaId}/chat`)}>연습 시작하기</Button>
+          {error && (
+            <p role="alert" className="text-center text-sm text-alert">
+              {error}
+            </p>
+          )}
+          <Button disabled={starting} onClick={handleStart}>
+            {starting ? '연습을 준비하고 있어요…' : '연습 시작하기'}
+          </Button>
           <Button variant="soft" onClick={() => navigate('/home')}>
             오늘은 쉬기
           </Button>
