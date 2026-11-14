@@ -1,4 +1,5 @@
 // Y3 홈
+import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import StatusBar from '../components/common/StatusBar.jsx'
 import Button from '../components/common/Button.jsx'
@@ -10,6 +11,7 @@ import { getMe } from '../api/auth.js'
 import { AREA_LABEL } from '../api/areas.js'
 import { toMessage } from '../api/errors.js'
 import { useLoad } from '../api/useLoad.js'
+import { saveFontSize } from '../utils/fontSize.js'
 
 // 받침이 있으면 '아', 없으면 '야' (하늘 → 하늘아, 강아지 → 강아지야)
 function greetName(name) {
@@ -45,6 +47,11 @@ export default function ChildHome() {
   const { status, data, error, reload } = useLoad(getHome)
   // 별명은 /auth/me에서 받아요. 실패해도 홈은 보여야 해서 인사말만 줄여요.
   const { data: me } = useLoad(getMe)
+  // 서버에 저장된 글자 크기(첫 설정에서 고른 값)로 맞춰요 — 다른 기기에서 로그인해도 같게
+  const fontScale = me?.display?.font_scale
+  useEffect(() => {
+    if (fontScale) saveFontSize(fontScale)
+  }, [fontScale])
   const areas = data?.areas ?? []
   const badgeCount = data?.badges.length ?? 0
 

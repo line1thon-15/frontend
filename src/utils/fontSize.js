@@ -4,18 +4,20 @@
 
 const STORAGE_KEY = 'fontSize'
 
-// 보통 = 피그마 크기 그대로(16px). 작게 0.9배, 크게 1.15배
+// 키는 백엔드 font_scale 값 그대로 써요.
+// 화면 이름: normal = 작게(0.9배), large = 보통(피그마 크기 그대로), xlarge = 크게(1.15배)
 export const FONT_SCALE = {
-  small: '14.4px',
-  normal: '16px',
-  large: '18.4px',
+  normal: '14.4px',
+  large: '16px',
+  xlarge: '18.4px',
 }
+export const DEFAULT_FONT_SCALE = 'large'
 
 export function applyFontSize(size) {
-  document.documentElement.style.fontSize = FONT_SCALE[size] ?? FONT_SCALE.normal
+  document.documentElement.style.fontSize = FONT_SCALE[size] ?? FONT_SCALE[DEFAULT_FONT_SCALE]
 }
 
-// 첫 설정 '다 했어요'에서 호출 (#4 머지 후 연결)
+// 적용하고 이 브라우저에도 기억해 둬요 (새로고침해도 유지)
 export function saveFontSize(size) {
   applyFontSize(size)
   try {
@@ -25,12 +27,12 @@ export function saveFontSize(size) {
   }
 }
 
-// 앱을 열 때 저장된 설정을 다시 적용
-// TODO: 설정 저장 API(T-31) 연동 후에는 로그인 응답의 설정값으로 applyFontSize 호출
+// 앱을 열 때 이 브라우저에 기억해 둔 설정을 다시 적용
+// (로그인 뒤에는 /auth/me의 display.font_scale로 다시 맞춰요 — 아이 홈)
 export function loadFontSize() {
   try {
     applyFontSize(localStorage.getItem(STORAGE_KEY))
   } catch {
-    applyFontSize('normal')
+    applyFontSize(DEFAULT_FONT_SCALE)
   }
 }

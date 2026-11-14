@@ -5,23 +5,50 @@ import StatusBar from '../components/common/StatusBar.jsx'
 import Header from '../components/common/Header.jsx'
 import Button from '../components/common/Button.jsx'
 import HomeIndicator from '../components/common/HomeIndicator.jsx'
+import { saveOnboarding } from '../api/onboarding.js'
+import { toMessage } from '../api/errors.js'
+import { DEFAULT_FONT_SCALE, saveFontSize } from '../utils/fontSize.js'
 
-// sample: 카드 속 '가' 크기(피그마 11·18·26pt)
-// root: '다 했어요' 이후 앱 전체 기준 글자 크기(html font-size). rem 단위 글자·여백이 같이 바뀌어요.
+// value: 백엔드 font_scale 값 / label: 화면 이름 / sample: 카드 속 '가' 크기(피그마 11·18·26pt)
+// 실제 앱 전체 크기는 utils/fontSize.js의 FONT_SCALE ('다 했어요' 이후 다음 화면부터 적용)
 const FONT_SIZES = [
-  { value: 'small', label: '작게', sample: 'text-[11px]', root: '14px' },
-  { value: 'normal', label: '보통', sample: 'text-[18px]', root: '16px' },
-  { value: 'large', label: '크게', sample: 'text-[26px]', root: '18px' },
+  { value: 'normal', label: '작게', sample: 'text-[11px]' },
+  { value: 'large', label: '보통', sample: 'text-[18px]' },
+  { value: 'xlarge', label: '크게', sample: 'text-[26px]' },
 ]
 
 const TRUSTED_PEOPLE = ['엄마', '아빠', '선생님', '할머니']
 
+// 진단 3문항 — 백엔드 diagnosis.json과 같은 id·문구 (바뀌면 같이 바꿔야 해요)
 const QUESTIONS = [
-  '모르는 사람이 말을 걸면 대답해요',
-  '친구 부탁은 거절하기 어려워요',
-  '돈이나 물건 이야기는 헷갈려요',
+  {
+    id: 'q1',
+    text: '모르는 사람이 메시지로 돈을 쉽게 벌 수 있다고 하면 어떻게 할까요?',
+    options: [
+      { id: 'q1_a', text: '바로 해 본다' },
+      { id: 'q1_b', text: '잘 모르겠다' },
+      { id: 'q1_c', text: '믿는 어른에게 먼저 물어본다' },
+    ],
+  },
+  {
+    id: 'q2',
+    text: '친구가 내 이름으로 휴대폰을 만들어 달라고 하면 어떻게 할까요?',
+    options: [
+      { id: 'q2_a', text: '친구니까 해 준다' },
+      { id: 'q2_b', text: '잘 모르겠다' },
+      { id: 'q2_c', text: '안 된다고 말한다' },
+    ],
+  },
+  {
+    id: 'q3',
+    text: '모르는 링크를 눌러 개인정보를 쓰라고 하면 어떻게 할까요?',
+    options: [
+      { id: 'q3_a', text: '써서 보낸다' },
+      { id: 'q3_b', text: '잘 모르겠다' },
+      { id: 'q3_c', text: '누르지 않는다' },
+    ],
+  },
 ]
-const ANSWERS = ['그래요', '가끔', '아니에요']
 
 // 이 화면 안에서만 쓰는 둥근 선택 버튼
 function Pill({ selected, dashed, onClick, children }) {
@@ -43,26 +70,39 @@ function Pill({ selected, dashed, onClick, children }) {
 
 export default function FirstSetup() {
   const navigate = useNavigate()
-  const [fontSize, setFontSize] = useState('normal')
+  const [fontSize, setFontSize] = useState(DEFAULT_FONT_SCALE)
   const [trusted, setTrusted] = useState('엄마')
   const [customOpen, setCustomOpen] = useState(false)
   const [customName, setCustomName] = useState('')
-  const [answers, setAnswers] = useState([null, null, null])
+  // { 질문id: 선택지id }
+  const [answers, setAnswers] = useState({})
+  const [submitting, setSubmitting] = useState(false)
+  const [error, setError] = useState('')
 
-  const allAnswered = answers.every((a) => a !== null)
+  const allAnswered = QUESTIONS.every((q) => answers[q.id])
   const trustedName = customOpen ? customName.trim() : trusted
-  const canSubmit = allAnswered && trustedName.length > 0
+  const canSubmit = allAnswered && trustedName.length > 0 && !submitting
 
-  const setAnswer = (qIndex, answer) =>
-    setAnswers((prev) => prev.map((a, i) => (i === qIndex ? answer : a)))
+  const setAnswer = (questionId, optionId) => setAnswers((prev) => ({ ...prev, [questionId]: optionId }))
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!canSubmit) return
-    // TODO: 첫 설정 저장 API 연동 (새로고침해도 글자 크기가 유지되게 저장 필요) ({ fontSize, trusted: trustedName, answers })
-    // 고른 글자 크기는 '다 했어요'를 누른 뒤 다음 화면부터 적용
-    const { root } = FONT_SIZES.find((f) => f.value === fontSize)
-    document.documentElement.style.fontSize = root
-    navigate('/home')
+    setSubmitting(true)
+    setError('')
+    try {
+      await saveOnboarding({
+        display: { font_scale: fontSize, high_contrast: false, tts_enabled: false },
+        trusted_contact: { name: trustedName },
+        diagnosis_answers: QUESTIONS.map((q) => ({ question_id: q.id, option_id: answers[q.id] })),
+        favorite_apps: [],
+      })
+      // 고른 글자 크기는 '다 했어요'를 누른 뒤 다음 화면부터 적용
+      saveFontSize(fontSize)
+      navigate('/home', { replace: true })
+    } catch (err) {
+      setError(toMessage(err, { VALIDATION_ERROR: '입력한 내용을 다시 확인해 주세요.' }))
+      setSubmitting(false)
+    }
   }
 
   return (
@@ -125,6 +165,7 @@ export default function FirstSetup() {
               autoFocus
               value={customName}
               onChange={(e) => setCustomName(e.target.value)}
+              maxLength={20}
               placeholder="예: 이모, 담임 선생님"
               className="mt-2 h-11 w-full rounded-xl border border-[#F0E2BF] bg-white px-4 text-sm outline-none placeholder:text-[#3A2A12]/35 focus:border-[#F2B300]"
             />
@@ -134,18 +175,18 @@ export default function FirstSetup() {
           <p className="mt-5 mb-2 text-sm text-[#6B5A3C]">나를 알아보는 3가지 질문</p>
           <div className="flex flex-col gap-5 rounded-2xl border border-[#F0E2BF] bg-white px-4 py-4">
             {QUESTIONS.map((question, qIndex) => (
-              <div key={question}>
-                <p className="mb-2.5 text-sm font-medium">
-                  {qIndex + 1}. {question}
+              <div key={question.id}>
+                <p className="mb-2.5 text-sm font-medium break-keep">
+                  {qIndex + 1}. {question.text}
                 </p>
-                <div className="flex gap-2">
-                  {ANSWERS.map((answer) => (
+                <div className="flex flex-wrap gap-2">
+                  {question.options.map((option) => (
                     <Pill
-                      key={answer}
-                      selected={answers[qIndex] === answer}
-                      onClick={() => setAnswer(qIndex, answer)}
+                      key={option.id}
+                      selected={answers[question.id] === option.id}
+                      onClick={() => setAnswer(question.id, option.id)}
                     >
-                      {answer}
+                      {option.text}
                     </Pill>
                   ))}
                 </div>
@@ -156,8 +197,13 @@ export default function FirstSetup() {
         </main>
 
         <div className="flex flex-col gap-3 px-5 pt-4 pb-3">
+          {error && (
+            <p role="alert" className="text-center text-sm text-alert">
+              {error}
+            </p>
+          )}
           <Button disabled={!canSubmit} onClick={handleSubmit}>
-            다 했어요
+            {submitting ? '저장하고 있어요…' : '다 했어요'}
           </Button>
           <p className="text-center text-sm text-[#6B5A3C]">나중에 설정에서 언제든 바꿀 수 있어요</p>
         </div>
