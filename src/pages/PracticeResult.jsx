@@ -93,7 +93,7 @@ export default function PracticeResult() {
                     <ul className="flex flex-col gap-3">
                       {data.missed.map((cue) => (
                         <li key={cue.cue_id}>
-                          <span className="inline-block rounded-full border border-primary-ink px-3 py-1.5 text-sm text-primary-ink">
+                          <span className="inline-block rounded-full border border-alert bg-alert-soft px-3 py-1.5 text-sm text-alert">
                             {cue.label}
                           </span>
                           <p className="mt-2 text-sm break-keep text-subtle">{cue.sentence}</p>
