@@ -19,36 +19,16 @@ const FONT_SIZES = [
 
 const TRUSTED_PEOPLE = ['엄마', '아빠', '선생님', '할머니']
 
-// 진단 3문항 — 백엔드 diagnosis.json과 같은 id·문구 (바뀌면 같이 바꿔야 해요)
+// 진단 3문항 — 백엔드 diagnosis.json(백엔드 PR #36)과 같은 id·문구 (바뀌면 같이 바꿔야 해요)
+const ANSWER_TEXTS = ['그래요', '가끔', '아니에요'] // 선택지 a·b·c
 const QUESTIONS = [
-  {
-    id: 'q1',
-    text: '모르는 사람이 메시지로 돈을 쉽게 벌 수 있다고 하면 어떻게 할까요?',
-    options: [
-      { id: 'q1_a', text: '바로 해 본다' },
-      { id: 'q1_b', text: '잘 모르겠다' },
-      { id: 'q1_c', text: '믿는 어른에게 먼저 물어본다' },
-    ],
-  },
-  {
-    id: 'q2',
-    text: '친구가 내 이름으로 휴대폰을 만들어 달라고 하면 어떻게 할까요?',
-    options: [
-      { id: 'q2_a', text: '친구니까 해 준다' },
-      { id: 'q2_b', text: '잘 모르겠다' },
-      { id: 'q2_c', text: '안 된다고 말한다' },
-    ],
-  },
-  {
-    id: 'q3',
-    text: '모르는 링크를 눌러 개인정보를 쓰라고 하면 어떻게 할까요?',
-    options: [
-      { id: 'q3_a', text: '써서 보낸다' },
-      { id: 'q3_b', text: '잘 모르겠다' },
-      { id: 'q3_c', text: '누르지 않는다' },
-    ],
-  },
-]
+  { id: 'q1', text: '모르는 사람이 말을 걸면 대답해요' },
+  { id: 'q2', text: '친구 부탁은 거절하기 어려워요' },
+  { id: 'q3', text: '돈이나 물건 이야기는 헷갈려요' },
+].map((q) => ({
+  ...q,
+  options: ['a', 'b', 'c'].map((suffix, i) => ({ id: `${q.id}_${suffix}`, text: ANSWER_TEXTS[i] })),
+}))
 
 // 이 화면 안에서만 쓰는 둥근 선택 버튼
 function Pill({ selected, dashed, onClick, children }) {
