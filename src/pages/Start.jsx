@@ -28,9 +28,9 @@ export default function Start() {
 
       <div className="flex flex-col gap-3 px-5 pb-4">
         <p className="mb-1 text-center text-sm text-[#3A2A12]/60">누구로 시작할까요?</p>
-        {/* TODO: 아이 로그인 화면 경로 확정되면 수정 */}
         <Button onClick={() => navigate('/child/login')}>아이로 시작하기</Button>
-        <Button variant="outline" onClick={() => navigate('/guardian/signup')}>
+        {/* 보호자는 로그인 화면부터 (처음이면 거기서 '가입하기'로 이동) */}
+        <Button variant="outline" onClick={() => navigate('/guardian/login')}>
           보호자로 시작하기
         </Button>
       </div>
