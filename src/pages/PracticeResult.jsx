@@ -38,6 +38,10 @@ export default function PracticeResult() {
     if (notEnded) navigate(`/practice/${areaId}/chat/${sessionId}`, { replace: true })
   }, [notEnded, navigate, areaId, sessionId])
 
+  // 다음엔 이렇게: result가 "missed"인 카드만 (result 필드가 아직 없으면 전부 보여요)
+  const cards = data?.cards ?? []
+  const shownCards = cards.some((c) => c.result !== undefined) ? cards.filter((c) => c.result === 'missed') : cards
+
   return (
     // 글자를 크게 하면 길어질 수 있어서 스크롤 가능 (스크롤바는 숨김)
     <div className="h-screen overflow-y-auto bg-page text-ink [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
@@ -71,6 +75,7 @@ export default function PracticeResult() {
                   </>
                 )}
               </h2>
+              {data.closing_line && <p className="mt-2 text-sm break-keep text-subtle">{data.closing_line}</p>}
 
               <div className="mt-4 flex flex-col gap-4">
                 {data.found.length > 0 && (
@@ -96,17 +101,17 @@ export default function PracticeResult() {
                           <span className="inline-block rounded-full border border-alert bg-alert-soft px-3 py-1.5 text-sm text-alert">
                             {cue.label}
                           </span>
-                          <p className="mt-2 text-sm break-keep text-subtle">{cue.sentence}</p>
+                          <p className="mt-2 text-sm break-keep text-subtle">{cue.tip ?? cue.sentence}</p>
                         </li>
                       ))}
                     </ul>
                   </Card>
                 )}
 
-                {data.cards.length > 0 && (
+                {shownCards.length > 0 && (
                   <Card title="다음엔 이렇게" className="border border-line bg-white">
                     <ul className="flex flex-col gap-2">
-                      {data.cards.map((card, i) => (
+                      {shownCards.map((card, i) => (
                         <li
                           key={i}
                           className={`rounded-2xl border px-4 py-3 text-[0.9375rem] leading-relaxed break-keep ${
